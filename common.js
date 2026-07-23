@@ -20,7 +20,7 @@
     if (event.target.closest('a')) setMenu(false);
   });
   window.addEventListener('resize', () => {
-    if (window.innerWidth > 1040) setMenu(false);
+    if (window.innerWidth > 1180) setMenu(false);
   });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') setMenu(false);
@@ -48,6 +48,24 @@
     });
   }
 
+  function addToCart(product) {
+    const cart = readCart();
+    const item = {
+      id: String(product.id || `produto-${Date.now()}`),
+      name: String(product.name || 'Produto DG Store'),
+      variant: String(product.variant || ''),
+      image: String(product.image || ''),
+      price: Math.max(0, Number(product.price) || 0),
+      quantity: Math.max(1, Math.min(99, Number(product.quantity) || 1))
+    };
+    const existing = cart.find(current => String(current.id) === item.id);
+    if (existing) existing.quantity = Math.min(99, (Number(existing.quantity) || 1) + item.quantity);
+    else cart.push(item);
+    localStorage.setItem('dgStoreCart', JSON.stringify(cart));
+    updateCartBadge();
+    showToast(`${item.name} foi adicionado ao carrinho.`);
+  }
+
   function showToast(message) {
     let toast = document.querySelector('.toast');
     if (!toast) {
@@ -62,7 +80,8 @@
     showToast.timer = setTimeout(() => toast.classList.remove('show'), 2800);
   }
 
-  window.DGStore = { readCart, updateCartBadge, showToast };
+  window.DGStore = { readCart, updateCartBadge, showToast, addToCart };
+  window.DGCart = window.DGCart || { addItem: addToCart };
   window.addEventListener('storage', updateCartBadge);
   updateCartBadge();
 })();

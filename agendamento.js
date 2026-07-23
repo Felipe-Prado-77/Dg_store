@@ -20,6 +20,7 @@
   const form = document.getElementById('bookingForm');
   const phone = document.getElementById('phone');
   const date = document.getElementById('bookingDate');
+  const timeSelect = document.getElementById('bookingTime');
   const packageOptions = document.getElementById('packageOptions');
   const packageError = document.getElementById('packageError');
   const consentError = document.getElementById('consentError');
@@ -48,6 +49,43 @@
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   date.min = tomorrow.toISOString().split('T')[0];
+
+  function readAvailableSlots() {
+    try {
+      const value = JSON.parse(localStorage.getItem('dgStoreAvailableSlots') || '[]');
+      return Array.isArray(value) ? value : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function loadAvailableTimes() {
+    const selectedDate = date.value;
+    const slots = readAvailableSlots()
+      .filter(slot => slot.date === selectedDate)
+      .sort((a, b) => a.time.localeCompare(b.time));
+
+    timeSelect.replaceChildren();
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = selectedDate
+      ? (slots.length ? 'Selecione um horário' : 'Nenhum horário disponível nesta data')
+      : 'Escolha uma data primeiro';
+    timeSelect.appendChild(placeholder);
+
+    slots.forEach(slot => {
+      const option = document.createElement('option');
+      option.value = slot.time;
+      option.dataset.slotId = slot.id;
+      option.textContent = `${slot.time} • ${slot.duration || 60} min`;
+      timeSelect.appendChild(option);
+    });
+
+    timeSelect.disabled = !selectedDate || slots.length === 0;
+    setFieldError(timeSelect, selectedDate && !slots.length ? 'Escolha outra data ou aguarde novos horários.' : '');
+  }
+
+  date.addEventListener('change', loadAvailableTimes);
 
   phone.addEventListener('input', event => {
     let value = event.target.value.replace(/\D/g, '').slice(0, 11);
@@ -102,11 +140,13 @@
       customerName: document.getElementById('customerName').value.trim(),
       phone: phone.value.trim(),
       device: document.getElementById('device').value.trim(),
+      address: document.getElementById('address').value.trim(),
       packageId,
       packageName: PACKAGES[packageId].name,
       price: PACKAGES[packageId].price,
       date: date.value,
-      time: document.getElementById('bookingTime').value,
+      time: timeSelect.value,
+      slotId: timeSelect.selectedOptions[0]?.dataset.slotId || '',
       notes: document.getElementById('notes').value.trim(),
       createdAt: new Date().toISOString(),
       status: 'awaiting_payment'
@@ -119,6 +159,7 @@
     document.getElementById('summaryDetails').hidden = false;
     document.getElementById('summaryName').textContent = booking.customerName;
     document.getElementById('summaryDevice').textContent = booking.device;
+    document.getElementById('summaryAddress').textContent = booking.address;
     document.getElementById('summaryPackage').textContent = booking.packageName;
     const formattedDate = new Intl.DateTimeFormat('pt-BR').format(new Date(`${booking.date}T12:00:00`));
     document.getElementById('summarySchedule').textContent = `${formattedDate} às ${booking.time}`;
@@ -220,6 +261,8 @@
     try { bookings = JSON.parse(localStorage.getItem('dgStoreBookings') || '[]'); if (!Array.isArray(bookings)) bookings = []; } catch { bookings = []; }
     bookings.push(booking);
     localStorage.setItem('dgStoreBookings', JSON.stringify(bookings));
+    const remainingSlots = readAvailableSlots().filter(slot => slot.id !== booking.slotId);
+    localStorage.setItem('dgStoreAvailableSlots', JSON.stringify(remainingSlots));
     event.currentTarget.hidden = true;
     const confirmation = document.getElementById('bookingConfirmation');
     confirmation.hidden = false;

@@ -40,6 +40,7 @@
 .upcoming { background: radial-gradient(circle at 76% 50%,rgba(73,134,188,.16),transparent 35%),linear-gradient(135deg,#0b0e13,#080b10); }
 .watch { background: radial-gradient(circle at 24% 50%,rgba(73,134,188,.19),transparent 35%),linear-gradient(135deg,#0b0e13,#07090c); }
 .status-pill { width: fit-content; margin-top: 28px; padding: 12px 17px; background: rgba(215,170,82,.07); border: 1px solid rgba(215,170,82,.25); border-radius: 999px; }
+.showcase-copy > .button { width: fit-content; margin-top: 28px; }
 .closing-cta { padding: 90px 0; background: linear-gradient(120deg,rgba(215,170,82,.11),rgba(77,152,204,.09)),#0b0e13; border-top: 1px solid rgba(215,170,82,.18); }
 .closing-inner { display: flex; align-items: center; justify-content: space-between; gap: 50px; }
 .closing-inner h2 { max-width: 760px; font-family: "Montserrat",Arial,sans-serif; font-size: clamp(2rem,4vw,4rem); line-height: 1.05; }

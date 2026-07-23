@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#07090d">
+  <title>Painel administrativo | DG Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-brand">
+        <a href="index.html" aria-label="Voltar para a loja"><img src="assets/logo.png" alt="DG Store"></a>
+        <div><strong>DG STORE</strong><span>Painel administrativo</span></div>
+      </div>
+
+      <nav class="admin-nav" aria-label="Seções administrativas">
+        <button class="nav-item active" type="button" data-section-target="dashboard"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
+        <button class="nav-item" type="button" data-section-target="vendas"><span class="nav-icon">▣</span><span>Vendas</span><b id="ordersNavCount">0</b></button>
+        <button class="nav-item" type="button" data-section-target="blindagens"><span class="nav-icon">◇</span><span>Blindagens</span><b id="bookingsNavCount">0</b></button>
+        <button class="nav-item" type="button" data-section-target="horarios"><span class="nav-icon">◷</span><span>Horários</span></button>
+        <button class="nav-item" type="button" data-section-target="produtos"><span class="nav-icon">□</span><span>Produtos</span><b id="productsNavCount">0</b></button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <a href="index.html" target="_blank" rel="noopener">Abrir loja <span>↗</span></a>
+        <a href="rastreio.html" target="_blank" rel="noopener">Testar rastreio <span>↗</span></a>
+        <p>Dados salvos neste navegador.</p>
+      </div>
+    </aside>
+
+    <button class="sidebar-overlay" id="sidebarOverlay" type="button" aria-label="Fechar menu"></button>
+
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Abrir menu" aria-expanded="false"><span></span><span></span><span></span></button>
+          <div><span class="topbar-label">PAINEL ADMINISTRATIVO</span><h1 id="pageTitle">Dashboard</h1></div>
+        </div>
+        <div class="admin-profile"><span>ADM</span><div><strong>Administrador</strong><small>DG Store</small></div></div>
+      </header>
+
+      <main class="admin-content">
+        <section class="admin-section active" data-section="dashboard">
+          <div class="section-heading">
+            <div><span class="section-kicker">VISÃO GERAL</span><h2>Desempenho da loja</h2><p>Acompanhe vendas, blindagens e lucro estimado.</p></div>
+            <button class="secondary-button" id="refreshDashboard" type="button">Atualizar dados</button>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card"><div class="metric-icon gold">R$</div><div><span>Lucro total</span><strong id="totalProfit">R$ 0,00</strong><small>Vendas e blindagens confirmadas</small></div></article>
+            <article class="metric-card"><div class="metric-icon blue">↗</div><div><span>Lucro do mês</span><strong id="monthProfit">R$ 0,00</strong><small id="monthProfitNote">No mês atual</small></div></article>
+            <article class="metric-card"><div class="metric-icon green">▣</div><div><span>Vendas feitas</span><strong id="salesCount">0</strong><small id="salesCountNote">Pedidos registrados</small></div></article>
+            <article class="metric-card"><div class="metric-icon violet">◇</div><div><span>Blindagens efetuadas</span><strong id="completedBookings">0</strong><small id="bookingsCountNote">Serviços concluídos</small></div></article>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="chart-card profit-chart-card">
+              <div class="card-title"><div><span>LUCRO</span><h3>Evolução dos últimos 6 meses</h3></div><strong id="chartTotal">R$ 0,00</strong></div>
+              <div class="canvas-wrap"><canvas id="profitChart" width="900" height="340" aria-label="Gráfico de lucro dos últimos seis meses"></canvas></div>
+            </article>
+            <article class="chart-card">
+              <div class="card-title"><div><span>DESTAQUES</span><h3>Mais vendidos do mês</h3></div></div>
+              <div class="ranking-list" id="topProducts"></div>
+              <div class="empty-small" id="topProductsEmpty">Nenhuma venda registrada neste mês.</div>
+            </article>
+          </div>
+
+          <div class="dashboard-grid bottom-grid">
+            <article class="data-card"><div class="card-title"><div><span>PEDIDOS</span><h3>Vendas recentes</h3></div><button class="text-button" type="button" data-go-section="vendas">Ver todas →</button></div><div class="compact-list" id="recentOrders"></div></article>
+            <article class="data-card"><div class="card-title"><div><span>AGENDA</span><h3>Próximas blindagens</h3></div><button class="text-button" type="button" data-go-section="blindagens">Ver agenda →</button></div><div class="compact-list" id="upcomingBookings"></div></article>
+          </div>
+        </section>
+
+        <section class="admin-section" data-section="vendas">
+          <div class="section-heading">
+            <div><span class="section-kicker">GESTÃO DE PEDIDOS</span><h2>Vendas</h2><p>Atualize o andamento para o cliente acompanhar pelo ID da compra.</p></div>
+          </div>
+          <div class="toolbar">
+            <label class="search-field"><span>⌕</span><input id="orderSearch" type="search" placeholder="Buscar por cliente, produto ou ID"></label>
+            <select id="orderStatusFilter" aria-label="Filtrar por status"><option value="all">Todos os status</option><option value="em_preparo">Em preparo</option><option value="a_caminho">A caminho</option><option value="entregue">Entregue</option></select>
+          </div>
+          <div class="table-card">
+            <div class="table-scroll"><table><thead><tr><th>ID da compra</th><th>Produto</th><th>Cliente</th><th>Contato</th><th>Endereço</th><th>Total</th><th>Status mostrado ao cliente</th><th></th></tr></thead><tbody id="ordersTableBody"></tbody></table></div>
+            <div class="table-empty" id="ordersEmpty"><span>▣</span><h3>Nenhuma venda encontrada</h3><p>Os pedidos finalizados pela loja aparecerão aqui.</p></div>
+          </div>
+        </section>
+
+        <section class="admin-section" data-section="blindagens">
+          <div class="section-heading">
+            <div><span class="section-kicker">SERVIÇOS AGENDADOS</span><h2>Blindagens</h2><p>Consulte dados, pacote, pagamento e situação de cada atendimento.</p></div>
+          </div>
+          <div class="toolbar">
+            <label class="search-field"><span>⌕</span><input id="bookingSearch" type="search" placeholder="Buscar por nome, telefone ou código"></label>
+            <select id="bookingStatusFilter" aria-label="Filtrar blindagens"><option value="all">Todos os status</option><option value="confirmed">Confirmada</option><option value="completed">Efetuada</option><option value="cancelled">Cancelada</option></select>
+          </div>
+          <div class="table-card">
+            <div class="table-scroll"><table><thead><tr><th>Data e horário</th><th>Cliente</th><th>Número</th><th>Endereço</th><th>Celular</th><th>Pacote</th><th>Valor</th><th>Situação</th></tr></thead><tbody id="bookingsTableBody"></tbody></table></div>
+            <div class="table-empty" id="bookingsEmpty"><span>◇</span><h3>Nenhuma blindagem agendada</h3><p>As reservas pagas aparecerão nesta lista.</p></div>
+          </div>
+        </section>
+
+        <section class="admin-section" data-section="horarios">
+          <div class="section-heading">
+            <div><span class="section-kicker">DISPONIBILIDADE</span><h2>Horários da blindagem</h2><p>Cadastre somente os horários que poderão ser escolhidos pelo cliente.</p></div>
+          </div>
+          <div class="schedule-layout">
+            <article class="form-panel">
+              <div class="panel-heading"><span>ADICIONAR DISPONIBILIDADE</span><h3>Novo horário</h3></div>
+              <form id="slotForm">
+                <label><span>Data *</span><input id="slotDate" type="date" required></label>
+                <label><span>Horário *</span><input id="slotTime" type="time" required></label>
+                <label><span>Duração estimada</span><select id="slotDuration"><option value="30">30 minutos</option><option value="45">45 minutos</option><option value="60" selected>1 hora</option><option value="90">1h30</option><option value="120">2 horas</option></select></label>
+                <button class="primary-button" type="submit">Adicionar horário</button>
+              </form>
+              <div class="slot-help"><strong>Como funciona?</strong><p>O horário aparece automaticamente no agendamento. Quando um cliente confirma e paga, ele deixa de estar disponível.</p></div>
+            </article>
+            <article class="slots-panel">
+              <div class="panel-heading row"><div><span>PRÓXIMOS HORÁRIOS</span><h3>Disponibilidade cadastrada</h3></div><select id="slotDateFilter" aria-label="Filtrar horários"><option value="all">Todas as datas</option></select></div>
+              <div class="slots-list" id="slotsList"></div>
+              <div class="table-empty compact" id="slotsEmpty"><span>◷</span><h3>Nenhum horário disponível</h3><p>Cadastre uma data e um horário no formulário.</p></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="admin-section" data-section="produtos">
+          <div class="section-heading">
+            <div><span class="section-kicker">CATÁLOGO</span><h2>Produtos</h2><p>Adicione ou edite nome, descrição, imagens, preço e estoque.</p></div>
+            <button class="primary-button" id="addProductButton" type="button">+ Adicionar produto</button>
+          </div>
+          <div class="product-stats">
+            <div><span>Produtos ativos</span><strong id="activeProductsCount">0</strong></div><div><span>Unidades em estoque</span><strong id="stockUnitsCount">0</strong></div><div><span>Estoque baixo</span><strong id="lowStockCount">0</strong></div>
+          </div>
+          <div class="toolbar">
+            <label class="search-field"><span>⌕</span><input id="productSearch" type="search" placeholder="Buscar produto"></label>
+            <select id="productStatusFilter" aria-label="Filtrar produtos"><option value="all">Todos os produtos</option><option value="active">Ativos</option><option value="inactive">Inativos</option><option value="low">Estoque baixo</option></select>
+          </div>
+          <div class="table-card">
+            <div class="table-scroll"><table><thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Custo</th><th>Estoque</th><th>Status</th><th>Atualizado</th><th>Ações</th></tr></thead><tbody id="productsTableBody"></tbody></table></div>
+            <div class="table-empty" id="productsEmpty"><span>□</span><h3>Nenhum produto cadastrado</h3><p>Use o botão “Adicionar produto” para começar o catálogo.</p></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="product-modal" id="productModal">
+    <form id="productForm" method="dialog" novalidate>
+      <div class="modal-heading"><div><span>CATÁLOGO DG STORE</span><h2 id="productModalTitle">Adicionar produto</h2></div><button id="closeProductModal" type="button" aria-label="Fechar">×</button></div>
+      <input id="productId" type="hidden">
+      <div class="modal-grid">
+        <label class="full"><span>Nome do produto *</span><input id="productName" type="text" placeholder="Ex.: Fone Bluetooth" required><small></small></label>
+        <label><span>Categoria *</span><select id="productCategory"><option value="produtos">Produtos</option><option value="relogios">Relógios</option></select><small>Define em qual página o item será exibido.</small></label>
+        <label><span>Status</span><select id="productActive"><option value="true">Ativo na loja</option><option value="false">Inativo</option></select><small></small></label>
+        <label class="full"><span>Descrição *</span><textarea id="productDescription" rows="4" placeholder="Descreva características e diferenciais" required></textarea><small></small></label>
+        <label><span>Preço de venda *</span><input id="productPrice" type="number" min="0" step="0.01" placeholder="0,00" required><small></small></label>
+        <label><span>Custo do produto</span><input id="productCost" type="number" min="0" step="0.01" placeholder="Usado no cálculo do lucro"><small></small></label>
+        <label><span>Quantidade em estoque *</span><input id="productStock" type="number" min="0" step="1" placeholder="0" required><small></small></label>
+        <label class="full"><span>Imagens</span><textarea id="productImages" rows="3" placeholder="Um caminho ou URL por linha&#10;assets/produtos/fone-1.png"></textarea><small>Você pode adicionar várias imagens, uma por linha.</small></label>
+        <label class="full"><span>Especificações</span><textarea id="productSpecifications" rows="4" placeholder="Uma informação por linha no formato:&#10;Marca: Exemplo&#10;Cor: Preto&#10;Garantia: 12 meses"></textarea><small>Essas informações aparecem na página individual do produto.</small></label>
+      </div>
+      <div class="image-preview" id="productImagePreview"></div>
+      <div class="modal-actions"><button class="secondary-button" id="cancelProductModal" type="button">Cancelar</button><button class="primary-button" type="submit">Salvar produto</button></div>
+    </form>
+  </dialog>
+
+  <div class="admin-toast" id="adminToast" role="status"></div>
+  <script src="admin.js"></script>
+</body>
+</html>

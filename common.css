@@ -95,13 +95,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .menu-logo { position: relative; z-index: 1002; display: flex; flex-shrink: 0; align-items: center; }
 .menu-logo img { width: 94px; height: 68px; object-fit: contain; }
-.menu-nav { display: flex; align-items: center; justify-content: flex-end; gap: clamp(16px, 2.1vw, 30px); }
+.menu-nav { display: flex; align-items: center; justify-content: flex-end; gap: clamp(12px, 1.65vw, 24px); }
 .menu-link {
   position: relative;
   padding: 32px 0;
   color: #d9dde3;
   font-family: "Montserrat", Arial, sans-serif;
-  font-size: .72rem;
+  font-size: .68rem;
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
@@ -217,7 +217,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 .toast.show { opacity: 1; transform: translateY(0); }
 
-@media (max-width: 1040px) {
+@media (max-width: 1180px) {
   .menu-toggle { display: block; }
   .menu-nav {
     position: fixed;

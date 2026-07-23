@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Acompanhe o andamento do seu pedido na DG Store.">
+  <meta name="theme-color" content="#06080b">
+  <title>Rastrear pedido | DG Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="rastreio.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="menu-container">
+      <a href="index.html" class="menu-logo" aria-label="Página inicial da DG Store"><img src="assets/logo.png" alt="DG Store"></a>
+      <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="primaryNavigation"><span></span><span></span><span></span></button>
+      <nav class="menu-nav" id="primaryNavigation" aria-label="Navegação principal">
+        <a class="menu-link" href="index.html">A loja</a><a class="menu-link" href="blindagem.html">Blindagem</a><a class="menu-link" href="produtos.html">Produtos</a><a class="menu-link" href="relogios.html">Relógios</a><a class="menu-link" href="agendamento.html">Agendamento</a><a class="menu-link is-active" href="rastreio.html" aria-current="page">Rastrear compra</a><a class="cart-link" href="carrinho.html">Carrinho <span class="cart-count" data-cart-count>0</span></a>
+      </nav>
+    </div>
+  </header>
+  <button class="menu-overlay" type="button" aria-label="Fechar menu"></button>
+
+  <main class="tracking-page">
+    <section class="tracking-hero">
+      <div class="container tracking-hero-inner">
+        <div><span class="eyebrow">ACOMPANHAMENTO</span><h1>Onde está o meu pedido?</h1><p>Digite o ID da compra e o telefone informado no pedido.</p></div>
+        <form class="tracking-form" id="trackingForm" novalidate>
+          <label><span>ID da compra</span><input id="trackingId" type="text" placeholder="Ex.: DG-1720000000000" required></label>
+          <label><span>Número do cliente</span><input id="trackingPhone" type="tel" inputmode="numeric" placeholder="(19) 99999-9999" required></label>
+          <button class="button button-primary" type="submit">Consultar pedido</button>
+          <p class="form-error" id="trackingError"></p>
+        </form>
+      </div>
+    </section>
+
+    <section class="tracking-result-section" id="trackingResultSection" hidden>
+      <div class="container">
+        <article class="tracking-card">
+          <div class="order-heading"><div><span>PEDIDO ENCONTRADO</span><h2 id="resultId"></h2><p id="resultDate"></p></div><strong id="resultStatus"></strong></div>
+          <div class="order-summary"><div><span>Cliente</span><strong id="resultCustomer"></strong></div><div><span>Produtos</span><strong id="resultProducts"></strong></div><div><span>Total</span><strong id="resultTotal"></strong></div><div><span>Entrega</span><strong id="resultAddress"></strong></div></div>
+          <div class="tracking-timeline" id="trackingTimeline">
+            <div class="timeline-step" data-status-step="em_preparo"><span>✓</span><div><strong>Em preparo</strong><p>Seu pedido foi recebido e está sendo preparado.</p></div></div>
+            <div class="timeline-line"></div>
+            <div class="timeline-step" data-status-step="a_caminho"><span>2</span><div><strong>A caminho</strong><p>O pedido saiu para o endereço informado.</p></div></div>
+            <div class="timeline-line"></div>
+            <div class="timeline-step" data-status-step="entregue"><span>3</span><div><strong>Entregue</strong><p>A entrega foi concluída.</p></div></div>
+          </div>
+          <p class="updated-at" id="resultUpdated"></p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-main">
+      <div class="footer-brand"><img src="assets/logo.png" alt="DG Store"><p>Tecnologia, proteção e cuidado para acompanhar o seu dia a dia.</p></div>
+      <div class="footer-column"><h3>Navegação</h3><a href="index.html">A loja</a><a href="blindagem.html">Blindagem</a><a href="carrinho.html">Carrinho</a></div>
+      <div class="footer-column"><h3>Atendimento</h3><a href="agendamento.html">Agendar blindagem</a><a href="rastreio.html">Rastrear pedido</a><a href="blindagem.html#faq">Perguntas frequentes</a></div>
+      <div class="footer-column"><h3>Informações</h3><p>Pagamento protegido</p><p>Aplicação com horário reservado</p><p class="footer-status">Acompanhamento online</p></div>
+    </div>
+    <div class="footer-bottom"><div class="footer-bottom-inner"><p>© <span data-current-year></span> DG Store. Todos os direitos reservados.</p><p>Proteção premium para o seu aparelho.</p></div></div>
+  </footer>
+  <script src="common.js"></script>
+  <script src="rastreio.js"></script>
+</body>
+</html>
