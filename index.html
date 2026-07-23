@@ -1,367 +1,144 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DG Store: proteção premium, eletrônicos e acessórios selecionados para o seu dia a dia.">
+  <meta name="theme-color" content="#06080b">
+  <title>DG Store | Tecnologia e proteção premium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <section class="menu">
-     <div class="menu-container">
-          <a href="#" class="menu-logo">
-        <img src="assets/logo.png" alt="Logo da Loja">
-        </a>
-      <nav class="menu-nav">
-
-        <a href="">A LOJA</a>
-        <a href="#blindagem">BLINDAGEM</a>
-        <a href="">ELETRONICOS</a>
-        <a href="">RELÓGIOS</a>
-        
+  <header class="site-header">
+    <div class="menu-container">
+      <a href="index.html" class="menu-logo" aria-label="Página inicial da DG Store"><img src="assets/logo.png" alt="DG Store"></a>
+      <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="primaryNavigation"><span></span><span></span><span></span></button>
+      <nav class="menu-nav" id="primaryNavigation" aria-label="Navegação principal">
+        <a class="menu-link is-active" href="index.html" aria-current="page">A loja</a>
+        <a class="menu-link" href="blindagem.html">Blindagem</a>
+        <a class="menu-link" href="#eletronicos">Eletrônicos</a>
+        <a class="menu-link" href="#relogios">Relógios</a>
+        <a class="menu-link" href="agendamento.html">Agendamento</a>
+        <a class="cart-link" href="carrinho.html">Carrinho <span class="cart-count" data-cart-count>0</span></a>
       </nav>
+    </div>
+  </header>
+  <button class="menu-overlay" type="button" aria-label="Fechar menu"></button>
 
-     </div>
+  <main>
+    <section class="home-hero" id="inicio">
+      <img class="home-hero-image" src="assets/banner2.png" alt="Banner DG Store">
+      <div class="home-hero-fallback">
+        <span class="eyebrow">DG STORE</span>
+        <h1>Tecnologia com presença. Proteção com propósito.</h1>
+        <p>Uma experiência pensada para valorizar seu aparelho antes, durante e depois da compra.</p>
+        <div class="home-actions">
+          <a class="button button-primary" href="blindagem.html">Conhecer a blindagem</a>
+          <a class="button button-secondary" href="#novidades">Ver novidades</a>
+        </div>
+      </div>
     </section>
 
-    <section class="banner">
-        <div>
-
-        <img src="assets/banner2.png" class="banner" alt="Banner da Loja">
-
-        </div>
-
+    <section class="trust-strip" aria-label="Diferenciais da DG Store">
+      <div><strong>Aplicação especializada</strong><span>Cuidado em cada detalhe</span></div>
+      <div><strong>Compra organizada</strong><span>Carrinho salvo no navegador</span></div>
+      <div><strong>Agendamento online</strong><span>Escolha pacote, data e horário</span></div>
+      <div><strong>Atendimento transparente</strong><span>Informações antes de confirmar</span></div>
     </section>
 
-
-
-<section class="protection-section" id="blindagem">
-  <div class="protection-container">
-
-    <!-- TEXTOS DO LADO ESQUERDO -->
-    <div class="protection-content">
-
-      <span class="protection-tag">
-        PROTEÇÃO PREMIUM
-      </span>
-
-      <h2>BLINDAGEM</h2>
-
-      <p class="protection-description">
-        Proteção avançada para celulares, tablets, relógios e outros
-        dispositivos. Mais resistência contra riscos, impactos e desgastes
-        causados pelo uso diário.
-      </p>
-
-      <div class="protection-benefits">
-
-        <div class="protection-benefit">
-          <span class="benefit-check">✓</span>
-
-          <div>
-            <strong>Proteção contra riscos</strong>
-            <p>
-              Ajuda a preservar a superfície e o acabamento original
-              do seu dispositivo.
-            </p>
+    <section class="showcase protection-showcase" id="blindagem">
+      <div class="showcase-inner">
+        <div class="showcase-copy">
+          <span class="eyebrow">PROTEÇÃO PREMIUM</span>
+          <h2>Blindagem sob medida para o seu celular</h2>
+          <p>Uma camada discreta que ajuda a proteger tela, câmeras e traseira contra riscos, marcas e desgastes do uso diário.</p>
+          <div class="feature-list">
+            <div><span>✓</span><p><strong>Três pacotes</strong> Escolha tela, tela + câmera ou proteção completa.</p></div>
+            <div><span>✓</span><p><strong>Aplicação profissional</strong> Preparação, alinhamento e acabamento cuidadosos.</p></div>
+            <div><span>✓</span><p><strong>Horário reservado</strong> Agendamento concluído somente após o pagamento.</p></div>
+          </div>
+          <div class="showcase-actions">
+            <a class="button button-primary" href="agendamento.html">Agendar blindagem</a>
+            <a class="text-link" href="blindagem.html">Saiba como funciona →</a>
           </div>
         </div>
-
-        <div class="protection-benefit">
-          <span class="benefit-check">✓</span>
-
-          <div>
-            <strong>Maior resistência</strong>
-            <p>
-              Uma camada extra de proteção para pequenos impactos e
-              situações do cotidiano.
-            </p>
-          </div>
+        <div class="model-card">
+          <span class="model-label">PROTEÇÃO EM DESTAQUE</span>
+          <model-viewer src="assets/models/iphone.glb" alt="Modelo 3D de um celular" auto-rotate rotation-per-second="15deg" camera-controls disable-zoom shadow-intensity="1" exposure="1.1" environment-image="neutral"></model-viewer>
+          <span class="availability"><i></i> Serviço disponível</span>
         </div>
-
-        <div class="protection-benefit">
-          <span class="benefit-check">✓</span>
-
-          <div>
-            <strong>Acabamento premium</strong>
-            <p>
-              Proteção discreta que mantém o visual elegante do aparelho.
-            </p>
-          </div>
-        </div>
-
       </div>
+    </section>
 
-      <div class="protection-information">
-
-        <div class="information-item">
-          <strong>Aplicação profissional</strong>
-          <span>Realizada com cuidado e precisão.</span>
+    <section class="about-section" id="novidades">
+      <div class="container">
+        <div class="about-heading">
+          <span class="eyebrow">MAIS QUE UMA LOJA</span>
+          <h2 class="section-title">Escolhas simples, informações claras e uma experiência premium.</h2>
         </div>
-
-        <div class="information-item">
-          <strong>Proteção personalizada</strong>
-          <span>Consulte os dispositivos disponíveis.</span>
+        <div class="about-grid">
+          <article><span>01</span><h3>Seleção cuidadosa</h3><p>Produtos e serviços organizados para facilitar sua decisão, sem excesso de informação.</p></article>
+          <article><span>02</span><h3>Proteção completa</h3><p>Pacotes de blindagem para as áreas que mais sofrem com o uso diário.</p></article>
+          <article><span>03</span><h3>Processo transparente</h3><p>Resumo de valores, pagamento e confirmação antes de finalizar qualquer agendamento.</p></article>
         </div>
-
       </div>
+    </section>
 
-      <a
-        href="https://wa.me/5519999999999?text=Olá,%20gostaria%20de%20saber%20mais%20sobre%20a%20blindagem."
-        class="protection-button"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Solicitar blindagem
-      </a>
+    <section class="showcase upcoming" id="eletronicos">
+      <div class="showcase-inner">
+        <div class="showcase-copy">
+          <span class="eyebrow">NOVIDADES A CAMINHO</span>
+          <h2>Eletrônicos</h2>
+          <p>Estamos preparando uma seleção de eletrônicos e acessórios para trabalho, entretenimento e produtividade.</p>
+          <div class="status-pill"><i></i> Catálogo em preparação</div>
+        </div>
+        <div class="model-card">
+          <span class="model-label">PRÓXIMOS LANÇAMENTOS</span>
+          <model-viewer src="assets/models/airpods.glb" alt="Modelo 3D representando eletrônicos" auto-rotate rotation-per-second="15deg" camera-controls disable-zoom shadow-intensity="1" exposure="1.1" environment-image="neutral"></model-viewer>
+          <span class="availability"><i></i> Em breve</span>
+        </div>
+      </div>
+    </section>
 
+    <section class="showcase upcoming watch" id="relogios">
+      <div class="showcase-inner reverse">
+        <div class="showcase-copy">
+          <span class="eyebrow">COLEÇÃO EM PREPARAÇÃO</span>
+          <h2>Relógios</h2>
+          <p>Modelos pensados para combinar estilo, acabamento e versatilidade em diferentes ocasiões.</p>
+          <div class="status-pill"><i></i> Novos modelos em breve</div>
+        </div>
+        <div class="model-card">
+          <span class="model-label">NOVA COLEÇÃO</span>
+          <model-viewer src="assets/models/relogio.glb" alt="Modelo 3D representando relógios" auto-rotate rotation-per-second="12deg" camera-controls disable-zoom shadow-intensity="1" exposure="1.1" environment-image="neutral"></model-viewer>
+          <span class="availability"><i></i> Em breve</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing-cta">
+      <div class="container closing-inner">
+        <div><span class="eyebrow">PRONTO PARA PROTEGER?</span><h2>Reserve a aplicação ideal para o seu celular.</h2><p>Informe seus dados, escolha o pacote e conclua o pagamento para confirmar o agendamento.</p></div>
+        <a class="button button-primary" href="agendamento.html">Começar agendamento</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-main">
+      <div class="footer-brand"><img src="assets/logo.png" alt="DG Store"><p>Tecnologia, proteção e cuidado para acompanhar o seu dia a dia.</p></div>
+      <div class="footer-column"><h3>Navegação</h3><a href="index.html">A loja</a><a href="blindagem.html">Blindagem</a><a href="carrinho.html">Carrinho</a></div>
+      <div class="footer-column"><h3>Atendimento</h3><a href="agendamento.html">Agendar blindagem</a><a href="blindagem.html#faq">Perguntas frequentes</a><p class="footer-status">Agendamento online</p></div>
+      <div class="footer-column"><h3>Informações</h3><p>Pagamento protegido</p><p>Aplicação com horário reservado</p><p>Compatibilidade sujeita ao modelo</p></div>
     </div>
+    <div class="footer-bottom"><div class="footer-bottom-inner"><p>© <span data-current-year></span> DG Store. Todos os direitos reservados.</p><p>Proteção premium para o seu aparelho.</p></div></div>
+  </footer>
 
-    <!-- MODELO 3D DO LADO DIREITO -->
-    <div class="protection-visual">
-
-      <span class="model-label">
-        PROTEÇÃO EM DESTAQUE
-      </span>
-
-      <model-viewer
-        class="protection-model"
-        src="assets/models/iphone.glb"
-        alt="Modelo 3D representando o serviço de blindagem"
-        auto-rotate
-        rotation-per-second="15deg"
-        camera-controls
-        disable-zoom
-        shadow-intensity="1"
-        exposure="1.1"
-        environment-image="neutral"
-        style="background: transparent;">
-      </model-viewer>
-
-      <div class="model-status">
-        <span class="model-status-dot"></span>
-        Serviço disponível
-      </div>
-
-    </div>
-
-  </div>
-</section>
-
-<section class="coming-section electronics-section" id="eletronicos">
-  <div class="coming-container">
-
-    <div class="coming-content">
-      <span class="coming-tag">NOVIDADES A CAMINHO</span>
-
-      <h2>ELETRÔNICOS</h2>
-
-      <p class="coming-description">
-        Estamos preparando uma seleção de eletrônicos modernos, escolhidos
-        para oferecer desempenho, qualidade e praticidade no seu dia a dia.
-      </p>
-
-      <div class="coming-benefits">
-
-        <div class="coming-benefit">
-          <span class="coming-check">✓</span>
-
-          <div>
-            <strong>Produtos selecionados</strong>
-            <p>
-              Uma linha escolhida com atenção à qualidade, desempenho
-              e confiabilidade.
-            </p>
-          </div>
-        </div>
-
-        <div class="coming-benefit">
-          <span class="coming-check">✓</span>
-
-          <div>
-            <strong>Tecnologia para o dia a dia</strong>
-            <p>
-              Produtos pensados para trabalho, entretenimento,
-              comunicação e produtividade.
-            </p>
-          </div>
-        </div>
-
-        <div class="coming-benefit">
-          <span class="coming-check">✓</span>
-
-          <div>
-            <strong>Novidades em breve</strong>
-            <p>
-              Smartphones, tablets, acessórios e outros eletrônicos
-              serão adicionados ao catálogo.
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="coming-information">
-
-        <div class="coming-information-item">
-          <strong>Catálogo em preparação</strong>
-          <span>Os primeiros produtos serão anunciados em breve.</span>
-        </div>
-
-        <div class="coming-information-item">
-          <strong>Seleção premium</strong>
-          <span>Qualidade e confiança em cada produto.</span>
-        </div>
-
-      </div>
-
-      <div class="coming-status-large">
-        <span class="status-dot"></span>
-        Produtos ainda não disponíveis
-      </div>
-    </div>
-
-    <div class="coming-visual electronic-visual">
-
-      <span class="model-label">
-        PRÓXIMOS LANÇAMENTOS
-      </span>
-
-      <model-viewer
-        class="coming-model"
-        src="assets/models/airpods.glb"
-        alt="Modelo 3D representando produtos eletrônicos"
-        auto-rotate
-        rotation-per-second="15deg"
-        camera-controls
-        disable-zoom
-        shadow-intensity="1"
-        exposure="1.1"
-        environment-image="neutral"
-        style="background: transparent;">
-      </model-viewer>
-
-      <div class="coming-model-status">
-        <span class="status-dot"></span>
-        Em breve
-      </div>
-
-    </div>
-
-  </div>
-</section>
-
-
-<section class="coming-section watch-section" id="relogios">
-  <div class="coming-container coming-container-reverse">
-
-    <div class="coming-content">
-      <span class="coming-tag">COLEÇÃO EM PREPARAÇÃO</span>
-
-      <h2>RELÓGIOS</h2>
-
-      <p class="coming-description">
-        Uma coleção de relógios está sendo preparada para quem busca
-        elegância, precisão e personalidade em todos os momentos.
-      </p>
-
-      <div class="coming-benefits">
-
-        <div class="coming-benefit">
-          <span class="coming-check">✓</span>
-
-          <div>
-            <strong>Design e presença</strong>
-            <p>
-              Modelos pensados para combinar estilo, sofisticação
-              e versatilidade.
-            </p>
-          </div>
-        </div>
-
-        <div class="coming-benefit">
-          <span class="coming-check">✓</span>
-
-          <div>
-            <strong>Precisão e qualidade</strong>
-            <p>
-              Uma seleção feita com atenção aos detalhes, acabamento
-              e durabilidade.
-            </p>
-          </div>
-        </div>
-
-        <div class="coming-benefit">
-          <span class="coming-check">✓</span>
-
-          <div>
-            <strong>Novos modelos em breve</strong>
-            <p>
-              A coleção será atualizada com diferentes estilos,
-              cores e propostas.
-            </p>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="coming-information">
-
-        <div class="coming-information-item">
-          <strong>Coleção exclusiva</strong>
-          <span>Os primeiros modelos serão anunciados em breve.</span>
-        </div>
-
-        <div class="coming-information-item">
-          <strong>Estilo para cada ocasião</strong>
-          <span>Do clássico ao moderno.</span>
-        </div>
-
-      </div>
-
-      <div class="coming-status-large">
-        <span class="status-dot"></span>
-        Coleção ainda não disponível
-      </div>
-    </div>
-
-    <div class="coming-visual watch-visual">
-
-      <span class="model-label">
-        NOVA COLEÇÃO
-      </span>
-
-      <model-viewer
-        class="coming-model"
-        src="assets/models/relogio.glb"
-        alt="Modelo 3D representando a futura coleção de relógios"
-        auto-rotate
-        rotation-per-second="12deg"
-        camera-controls
-        disable-zoom
-        shadow-intensity="1"
-        exposure="1.1"
-        environment-image="neutral"
-        style="background: transparent;">
-      </model-viewer>
-
-      <div class="coming-model-status">
-        <span class="status-dot"></span>
-        Em breve
-      </div>
-
-    </div>
-
-  </div>
-</section>
-
-
-<script
-  type="module"
-  src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js">
-</script>
-
-
+  <script src="common.js"></script>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js"></script>
 </body>
 </html>
