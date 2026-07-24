@@ -8,7 +8,7 @@
   const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
   const dateFormatter = new Intl.DateTimeFormat('pt-BR');
   const monthFormatter = new Intl.DateTimeFormat('pt-BR', { month: 'short' });
-  const sectionTitles = { dashboard: 'Dashboard', vendas: 'Vendas', blindagens: 'Blindagens', horarios: 'Horários', produtos: 'Produtos', configuracoes: 'Configurações' };
+  const sectionTitles = { dashboard: 'Dashboard', vendas: 'Vendas', blindagens: 'Blindagens', horarios: 'Horários', pacotes: 'Pacotes', produtos: 'Produtos', banners: 'Banners', configuracoes: 'Configurações' };
   const orderLabels = {
     pagamento_pendente: 'Pagamento pendente',
     pagamento_aprovado: 'Pagamento aprovado',
@@ -82,7 +82,9 @@
     if (name === 'vendas') renderOrders();
     if (name === 'blindagens') renderBookings();
     if (name === 'horarios') renderSlots();
+    if (name === 'pacotes') window.DGAdminContent?.renderPackages();
     if (name === 'produtos') renderProducts();
+    if (name === 'banners') window.DGAdminContent?.renderBanners();
   }
   document.querySelectorAll('[data-section-target]').forEach(button => button.addEventListener('click', () => openSection(button.dataset.sectionTarget)));
   document.querySelectorAll('[data-go-section]').forEach(button => button.addEventListener('click', () => openSection(button.dataset.goSection)));

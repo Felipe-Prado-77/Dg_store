@@ -31,16 +31,21 @@
   <button class="menu-overlay" type="button" aria-label="Fechar menu"></button>
 
   <main>
-    <section class="home-hero" id="inicio">
-      <img class="home-hero-image" src="assets/banner2.png" alt="Banner DG Store">
+    <section class="home-hero" id="inicio" aria-roledescription="carrossel" aria-label="Destaques da DG Store">
+      <img class="home-hero-image" id="homeBannerImage" src="assets/banner2.png" alt="Banner DG Store">
       <div class="home-hero-fallback">
         <span class="eyebrow">DG STORE</span>
-        <h1>Tecnologia com presença. Proteção com propósito.</h1>
-        <p>Uma experiência pensada para valorizar seu aparelho antes, durante e depois da compra.</p>
+        <h1 id="homeBannerTitle">Tecnologia com presença. Proteção com propósito.</h1>
+        <p id="homeBannerSubtitle">Uma experiência pensada para valorizar seu aparelho antes, durante e depois da compra.</p>
         <div class="home-actions">
-          <a class="button button-primary" href="blindagem.html">Conhecer a blindagem</a>
+          <a class="button button-primary" id="homeBannerButton" href="blindagem.html">Conhecer a blindagem</a>
           <a class="button button-secondary" href="#novidades">Ver novidades</a>
         </div>
+      </div>
+      <div class="hero-carousel-controls" id="heroCarouselControls" hidden>
+        <button type="button" id="previousBanner" aria-label="Banner anterior">‹</button>
+        <div class="hero-carousel-dots" id="heroCarouselDots" aria-label="Escolher banner"></div>
+        <button type="button" id="nextBanner" aria-label="Próximo banner">›</button>
       </div>
     </section>
 
@@ -58,7 +63,7 @@
           <h2>Blindagem sob medida para o seu celular</h2>
           <p>Uma camada discreta que ajuda a proteger tela, câmeras e traseira contra riscos, marcas e desgastes do uso diário.</p>
           <div class="feature-list">
-            <div><span>✓</span><p><strong>Três pacotes</strong> Escolha tela, tela + câmera ou proteção completa.</p></div>
+            <div><span>✓</span><p><strong>Pacotes personalizáveis</strong> Escolha entre as opções de proteção disponíveis.</p></div>
             <div><span>✓</span><p><strong>Aplicação profissional</strong> Preparação, alinhamento e acabamento cuidadosos.</p></div>
             <div><span>✓</span><p><strong>Horário reservado</strong> Agendamento concluído somente após o pagamento.</p></div>
           </div>
@@ -140,6 +145,10 @@
   </footer>
 
   <script src="common.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="backend-config.js"></script>
+  <script src="backend.js"></script>
+  <script src="home-content.js?v=1"></script>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js"></script>
 </body>
 </html>

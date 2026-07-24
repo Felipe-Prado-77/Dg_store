@@ -1,6 +1,6 @@
 # DG Store — ativação do backend
 
-O projeto já contém banco, autenticação, funções de pagamento, entrega e rastreamento. Ele continua funcionando em modo local enquanto as credenciais não forem configuradas.
+O projeto já contém banco, autenticação, funções de pagamento, entrega e rastreamento. O catálogo e a interface podem ser visualizados localmente, mas compras e agendamentos ficam bloqueados enquanto as credenciais não forem configuradas.
 
 ## 1. Criar o projeto Supabase
 
@@ -14,7 +14,16 @@ npx supabase link --project-ref SEU_PROJECT_REF
 npx supabase db push
 ```
 
-As migrations criam produtos, variações, pedidos, itens, histórico de status, agendamentos, horários, configurações, logs, regras RLS e o bucket de imagens.
+As migrations criam produtos, variações, pedidos, itens, histórico de status, agendamentos, horários, pacotes de blindagem, banners, configurações, logs, regras RLS e os buckets de imagens.
+
+Se o projeto já estava funcionando antes da inclusão de pacotes e banners, basta executar novamente:
+
+```bash
+npx supabase db push
+npx supabase functions deploy create-checkout
+```
+
+O primeiro comando aplica somente a nova migration. O segundo atualiza o cálculo seguro do pagamento para buscar o pacote e o preço diretamente no banco.
 
 ## 2. Configurar o frontend
 
@@ -122,14 +131,16 @@ O `config.toml` já define quais funções públicas não usam JWT. O webhook va
 ## 7. Testar antes da produção
 
 1. Cadastre um produto no painel.
-2. Cadastre horários para a blindagem.
-3. Use credenciais e contas de teste do Mercado Pago.
-4. Faça uma compra e use o simulador de Webhooks do painel do Mercado Pago para validar a notificação de teste.
-5. Confirme se o pedido aprovado aparece no painel.
-6. Mude os status e teste o rastreio.
-7. Teste CEP local, retirada e CEP distante.
-8. Teste blindagem dentro e fora dos cinco municípios.
-9. Só depois troque tokens de teste por produção.
+2. Edite um pacote de blindagem e confirme se o novo preço aparece no agendamento.
+3. Cadastre dois banners, teste o carrossel e depois deixe somente um ativo para testar o modo estático.
+4. Cadastre horários para a blindagem.
+5. Use credenciais e contas de teste do Mercado Pago.
+6. Faça uma compra e use o simulador de Webhooks do painel do Mercado Pago para validar a notificação de teste.
+7. Confirme se o pedido aprovado aparece no painel.
+8. Mude os status e teste o rastreio.
+9. Teste CEP local, retirada e CEP distante.
+10. Teste blindagem dentro e fora dos cinco municípios.
+11. Só depois troque tokens de teste por produção.
 
 ## 8. Segurança e manutenção
 

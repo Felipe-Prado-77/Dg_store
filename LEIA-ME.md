@@ -4,20 +4,20 @@ Abra `index.html` com uma extensão de servidor local, como Live Server, para te
 
 O projeto agora possui dois modos:
 
-- **demonstração local:** funciona sem contas externas usando `localStorage`;
+- **visualização local:** catálogo e interface podem ser vistos sem contas externas, mas compras e agendamentos exigem o backend;
 - **backend real:** Supabase + Mercado Pago + Melhor Envio/Correios.
 
 Para ativar o backend, siga [BACKEND-SETUP.md](BACKEND-SETUP.md).
 
 ## Arquivos
 
-- `index.html` + `style.css`: página principal.
+- `index.html` + `style.css` + `home-content.js`: página principal com banner estático ou carrossel administrável.
 - `blindagem.html` + `blindagem.css` + `blindagem.js`: informações, pacotes e FAQ.
 - `carrinho.html` + `carrinho.css` + `carrinho.js`: carrinho salvo no `localStorage`.
-- `checkout.html` + `checkout.css` + `checkout.js`: dados do cliente, endereço, frete, pagamento demonstrativo e criação do pedido.
+- `checkout.html` + `checkout.css` + `checkout.js`: dados do cliente, endereço, frete e pagamento obrigatório pelo Mercado Pago.
 - `agendamento.html` + `agendamento.css` + `agendamento.js`: dados, pacote, pagamento e confirmação.
 - `dashboard.html`: atalho direto para abrir o Dashboard.
-- `admin.html` + `admin.css` + `admin.js`: painel completo com Dashboard, vendas, blindagens, horários e produtos.
+- `admin.html` + `admin.css` + `admin.js` + `admin-content.js`: painel completo com Dashboard, vendas, blindagens, horários, pacotes, produtos e banners.
 - `rastreio.html` + `rastreio.css` + `rastreio-extra.css` + `rastreio.js`: consulta do andamento do pedido pelo ID e telefone.
 - `produtos.html` + `produtos.css`: catálogo geral com ambientação tecnológica.
 - `relogios.html` + `relogios.css`: catálogo de relógios com ambientação própria.
@@ -41,7 +41,9 @@ Abra `dashboard.html` ou `admin.html` para acessar o painel. Nele é possível:
 - mudar o status de uma venda desde `Pagamento pendente` até `Entregue` ou `Cancelado`;
 - consultar e concluir agendamentos de blindagem;
 - cadastrar os horários que aparecem na página de agendamento;
+- adicionar, editar, destacar, ativar e excluir pacotes de blindagem com preço e itens incluídos;
 - adicionar, editar, ativar, destacar, desativar e excluir produtos;
+- adicionar, ordenar, ativar, editar e excluir banners da página inicial;
 - escolher se o produto aparece em `Produtos` ou em `Relógios`;
 - cadastrar marca, modelo, garantia, promoção, dimensões, peso, imagens, especificações e variações;
 - informar o custo do produto para estimar o lucro.
@@ -56,13 +58,15 @@ O logo e o banner estão incluídos. Os modelos 3D abaixo eram referências do s
 - `assets/models/airpods.glb`
 - `assets/models/relogio.glb`
 
-## Valores dos pacotes
+## Pacotes e banners administráveis
 
-Os preços iniciais estão no objeto `PACKAGES`, em `agendamento.js`, e também são validados na função `create-checkout`. Altere os dois locais juntos até criar uma tabela de pacotes no banco.
+Os pacotes ficam na tabela `armor_packages`. A página de blindagem e o agendamento mostram somente os ativos, na ordem definida pelo administrador. O preço enviado pelo navegador nunca é aceito como fonte de verdade: a função `create-checkout` busca novamente o pacote ativo e o preço no banco antes de criar o pagamento.
+
+Os banners ficam na tabela `home_banners`. Um único banner ativo permanece estático. Com dois ou mais, a página inicial cria controles e alternância automática. As imagens enviadas pelo painel são salvas no bucket público `site-images`.
 
 ## Checkout e pagamento real
 
-Sem configuração, o checkout e o agendamento funcionam em modo de demonstração. Com o Supabase ativado, eles criam uma sessão segura no servidor e redirecionam para o Checkout Pro do Mercado Pago.
+Sem configuração, o checkout e o agendamento ficam bloqueados. Com o Supabase ativado, eles criam uma sessão segura no servidor e redirecionam para o Checkout Pro do Mercado Pago. Não existe aprovação simulada no navegador.
 
 Para ativar pagamento real:
 

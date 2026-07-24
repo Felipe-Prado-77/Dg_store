@@ -1,8 +1,10 @@
 .home-hero { position: relative; min-height: 560px; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 72% 30%, rgba(215,170,82,.2), transparent 34%), linear-gradient(135deg,#07090c,#10151c); }
-.home-hero-image { width: 100%; height: auto; min-height: 560px; object-fit: cover; }
+.home-hero-image { width: 100%; height: auto; min-height: 560px; object-fit: cover; transition: opacity .28s ease, transform .7s ease; }
+.home-hero-image.is-changing { opacity: .3; transform: scale(1.015); }
 .home-hero-fallback { position: absolute; left: max(5vw, 24px); z-index: 2; max-width: 690px; padding: 46px; background: rgba(5,7,10,.72); border: 1px solid rgba(255,255,255,.1); border-radius: 26px; backdrop-filter: blur(14px); }
 .home-hero-fallback h1 { font-family: "Montserrat",Arial,sans-serif; font-size: clamp(2.5rem,5.2vw,5.6rem); line-height: 1; letter-spacing: -.055em; }
 .home-hero-fallback p { max-width: 570px; margin-top: 20px; color: #bac1cc; }
+.hero-carousel-controls{position:absolute;right:max(4vw,22px);bottom:26px;z-index:4;display:flex;align-items:center;gap:12px;padding:9px 12px;background:rgba(5,7,10,.74);border:1px solid rgba(255,255,255,.12);border-radius:999px;backdrop-filter:blur(12px)}.hero-carousel-controls[hidden]{display:none}.hero-carousel-controls>button{width:34px;height:34px;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);border-radius:50%;font-size:1.35rem;line-height:1}.hero-carousel-controls>button:hover{color:#080a0d;background:var(--gold-light)}.hero-carousel-dots{display:flex;align-items:center;gap:7px}.hero-carousel-dots button{width:8px;height:8px;padding:0;background:#7a828e;border:0;border-radius:999px;transition:.2s}.hero-carousel-dots button.active{width:24px;background:var(--gold-light)}
 .home-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 .trust-strip { display: grid; grid-template-columns: repeat(4,1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #090c10; }
 .trust-strip div { min-height: 120px; display: flex; flex-direction: column; justify-content: center; padding: 24px clamp(20px,3vw,46px); border-right: 1px solid var(--line); }

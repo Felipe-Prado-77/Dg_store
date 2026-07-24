@@ -47,6 +47,53 @@
     if (error) throw error;
     return (data || []).map(row => row.data);
   }
+  async function getArmorPackages(options = {}) {
+    if (!client) return null;
+    let query = client
+      .from('armor_packages')
+      .select('*')
+      .order('display_order')
+      .order('created_at');
+    if (!options.includeInactive) query = query.eq('active', true);
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data || []).map(row => ({
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      price: Number(row.price) || 0,
+      features: row.features || [],
+      active: row.active,
+      featured: row.featured,
+      displayOrder: Number(row.display_order) || 0,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at
+    }));
+  }
+  async function getHomeBanners(options = {}) {
+    if (!client) return null;
+    let query = client
+      .from('home_banners')
+      .select('*')
+      .order('display_order')
+      .order('created_at');
+    if (!options.includeInactive) query = query.eq('active', true);
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data || []).map(row => ({
+      id: row.id,
+      title: row.title,
+      subtitle: row.subtitle,
+      imageUrl: row.image_url,
+      altText: row.alt_text,
+      buttonLabel: row.button_label,
+      buttonUrl: row.button_url,
+      active: row.active,
+      displayOrder: Number(row.display_order) || 0,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at
+    }));
+  }
   async function loadStoreSettings() {
     if (!client) return config.store || {};
     const { data, error } = await client.from('store_settings').select('*').eq('id', true).single();
@@ -183,6 +230,14 @@
     if (error) throw error;
     return client.storage.from('product-images').getPublicUrl(path).data.publicUrl;
   }
+  async function uploadSiteImage(file) {
+    if (!client) throw new Error('Backend não configurado.');
+    const extension = (file.name.split('.').pop() || 'webp').replace(/[^a-z0-9]/gi, '');
+    const path = `banners/${crypto.randomUUID()}.${extension}`;
+    const { error } = await client.storage.from('site-images').upload(path, file, { cacheControl: '3600', upsert: false });
+    if (error) throw error;
+    return client.storage.from('site-images').getPublicUrl(path).data.publicUrl;
+  }
   async function lookupCep(cep) {
     const value = digits(cep);
     if (value.length !== 8) throw new Error('Informe um CEP com 8 números.');
@@ -199,6 +254,8 @@
     config,
     getProducts,
     getAvailableSlots,
+    getArmorPackages,
+    getHomeBanners,
     quoteShipping,
     createCheckout,
     paymentStatus,
@@ -211,6 +268,7 @@
     syncRecord,
     deleteRecord,
     uploadProductImage,
+    uploadSiteImage,
     lookupCep,
     isAllowedCity,
     normaliseCity

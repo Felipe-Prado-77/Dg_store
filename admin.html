@@ -25,7 +25,9 @@
         <button class="nav-item" type="button" data-section-target="vendas"><span class="nav-icon">▣</span><span>Vendas</span><b id="ordersNavCount">0</b></button>
         <button class="nav-item" type="button" data-section-target="blindagens"><span class="nav-icon">◇</span><span>Blindagens</span><b id="bookingsNavCount">0</b></button>
         <button class="nav-item" type="button" data-section-target="horarios"><span class="nav-icon">◷</span><span>Horários</span></button>
+        <button class="nav-item" type="button" data-section-target="pacotes"><span class="nav-icon">◆</span><span>Pacotes</span></button>
         <button class="nav-item" type="button" data-section-target="produtos"><span class="nav-icon">□</span><span>Produtos</span><b id="productsNavCount">0</b></button>
+        <button class="nav-item" type="button" data-section-target="banners"><span class="nav-icon">▱</span><span>Banners</span></button>
         <button class="nav-item" type="button" data-section-target="configuracoes"><span class="nav-icon">⚙</span><span>Configurações</span></button>
       </nav>
 
@@ -138,6 +140,18 @@
           </div>
         </section>
 
+        <section class="admin-section" data-section="pacotes">
+          <div class="section-heading">
+            <div><span class="section-kicker">SERVIÇOS E PREÇOS</span><h2>Pacotes de blindagem</h2><p>Defina os pacotes mostrados ao cliente e os valores cobrados pelo Mercado Pago.</p></div>
+            <button class="primary-button" id="addPackageButton" type="button">+ Adicionar pacote</button>
+          </div>
+          <div class="content-help"><strong>Preço protegido</strong><p>O navegador mostra o valor cadastrado aqui, mas o servidor consulta novamente o banco antes de criar o pagamento.</p></div>
+          <div class="table-card">
+            <div class="table-scroll"><table><thead><tr><th>Pacote</th><th>Descrição</th><th>Preço</th><th>Ordem</th><th>Destaque</th><th>Status</th><th>Ações</th></tr></thead><tbody id="packagesTableBody"></tbody></table></div>
+            <div class="table-empty" id="packagesEmpty"><span>◆</span><h3>Nenhum pacote cadastrado</h3><p>Adicione o primeiro pacote para liberar opções no agendamento.</p></div>
+          </div>
+        </section>
+
         <section class="admin-section" data-section="produtos">
           <div class="section-heading">
             <div><span class="section-kicker">CATÁLOGO</span><h2>Produtos</h2><p>Adicione ou edite nome, descrição, imagens, preço e estoque.</p></div>
@@ -153,6 +167,18 @@
           <div class="table-card">
             <div class="table-scroll"><table><thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Custo</th><th>Estoque</th><th>Status</th><th>Atualizado</th><th>Ações</th></tr></thead><tbody id="productsTableBody"></tbody></table></div>
             <div class="table-empty" id="productsEmpty"><span>□</span><h3>Nenhum produto cadastrado</h3><p>Use o botão “Adicionar produto” para começar o catálogo.</p></div>
+          </div>
+        </section>
+
+        <section class="admin-section" data-section="banners">
+          <div class="section-heading">
+            <div><span class="section-kicker">PÁGINA INICIAL</span><h2>Banners</h2><p>Cadastre imagens, textos e links. Com um banner a imagem fica estática; com dois ou mais o carrossel é automático.</p></div>
+            <button class="primary-button" id="addBannerButton" type="button">+ Adicionar banner</button>
+          </div>
+          <div class="content-help"><strong>Ordem de exibição</strong><p>Os menores números aparecem primeiro. Somente banners ativos são exibidos na página inicial.</p></div>
+          <div class="banner-admin-grid" id="bannersGrid"></div>
+          <div class="table-card" id="bannersEmpty">
+            <div class="table-empty"><span>▱</span><h3>Nenhum banner cadastrado</h3><p>Adicione uma imagem para criar o destaque da página inicial.</p></div>
           </div>
         </section>
 
@@ -210,11 +236,49 @@
     </form>
   </dialog>
 
+  <dialog class="product-modal" id="packageModal">
+    <form id="packageForm" method="dialog" novalidate>
+      <div class="modal-heading"><div><span>BLINDAGEM DG STORE</span><h2 id="packageModalTitle">Adicionar pacote</h2></div><button id="closePackageModal" type="button" aria-label="Fechar">×</button></div>
+      <input id="packageId" type="hidden">
+      <div class="modal-grid">
+        <label class="full"><span>Nome do pacote *</span><input id="packageName" type="text" required placeholder="Ex.: Blindagem premium"><small></small></label>
+        <label class="full"><span>Descrição *</span><textarea id="packageDescription" rows="3" required placeholder="Explique o que o pacote protege"></textarea><small></small></label>
+        <label><span>Preço *</span><input id="packagePrice" type="number" min="0.01" step="0.01" required placeholder="0,00"><small></small></label>
+        <label><span>Ordem de exibição</span><input id="packageOrder" type="number" step="1" value="10"><small>Menores números aparecem primeiro.</small></label>
+        <label><span>Status</span><select id="packageActive"><option value="true">Ativo para clientes</option><option value="false">Inativo</option></select><small></small></label>
+        <label><span>Destaque</span><select id="packageFeatured"><option value="false">Pacote comum</option><option value="true">Mais escolhido</option></select><small></small></label>
+        <label class="full"><span>Itens incluídos</span><textarea id="packageFeatures" rows="5" placeholder="Um item por linha&#10;Aplicação na tela&#10;Limpeza e preparação"></textarea><small>Esses itens aparecem na página de blindagem.</small></label>
+      </div>
+      <div class="modal-actions"><button class="secondary-button" id="cancelPackageModal" type="button">Cancelar</button><button class="primary-button" type="submit">Salvar pacote</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="product-modal" id="bannerModal">
+    <form id="bannerForm" method="dialog" novalidate>
+      <div class="modal-heading"><div><span>PÁGINA INICIAL</span><h2 id="bannerModalTitle">Adicionar banner</h2></div><button id="closeBannerModal" type="button" aria-label="Fechar">×</button></div>
+      <input id="bannerId" type="hidden">
+      <div class="modal-grid">
+        <label class="full"><span>Imagem do banner *</span><input id="bannerImageUrl" type="text" required placeholder="URL ou caminho da imagem"><small></small></label>
+        <label class="full"><span>Enviar nova imagem</span><input id="bannerImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/avif"><small>Recomendado: 1920 × 720 px, até 8 MB.</small></label>
+        <label class="full"><span>Título</span><input id="bannerTitle" type="text" maxlength="120" placeholder="Mensagem principal"><small></small></label>
+        <label class="full"><span>Texto de apoio</span><textarea id="bannerSubtitle" rows="3" maxlength="240" placeholder="Descrição curta do destaque"></textarea><small></small></label>
+        <label><span>Texto do botão</span><input id="bannerButtonLabel" type="text" maxlength="40" placeholder="Ex.: Ver produtos"><small></small></label>
+        <label><span>Destino do botão</span><input id="bannerButtonUrl" type="text" placeholder="Ex.: produtos.html"><small>Deixe os dois campos do botão vazios para ocultá-lo.</small></label>
+        <label class="full"><span>Texto alternativo da imagem</span><input id="bannerAltText" type="text" maxlength="160" placeholder="Descreva a imagem para acessibilidade"><small></small></label>
+        <label><span>Ordem de exibição</span><input id="bannerOrder" type="number" step="1" value="10"><small></small></label>
+        <label><span>Status</span><select id="bannerActive"><option value="true">Ativo na página inicial</option><option value="false">Inativo</option></select><small></small></label>
+      </div>
+      <div class="banner-modal-preview" id="bannerModalPreview"></div>
+      <div class="modal-actions"><button class="secondary-button" id="cancelBannerModal" type="button">Cancelar</button><button class="primary-button" type="submit">Salvar banner</button></div>
+    </form>
+  </dialog>
+
   <div class="admin-toast" id="adminToast" role="status"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="backend-config.js"></script>
   <script src="backend.js"></script>
   <script src="admin.js"></script>
   <script src="admin-settings.js"></script>
+  <script src="admin-content.js"></script>
 </body>
 </html>

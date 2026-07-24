@@ -1,5 +1,9 @@
 (function(){
-  const PACKAGES={tela:{name:'Tela',description:'Proteção da tela',price:79.90},'tela-camera':{name:'Tela + câmera',description:'Tela e conjunto de câmeras',price:99.90},completo:{name:'Completo',description:'Tela, câmera e traseira',price:129.90}};
+  const FALLBACK_PACKAGES=[
+    {id:'tela',name:'Tela',description:'Proteção da tela',price:79.90,active:true},
+    {id:'tela-camera',name:'Tela + câmera',description:'Tela e conjunto de câmeras',price:99.90,active:true,featured:true},
+    {id:'completo',name:'Completo',description:'Tela, câmera e traseira',price:129.90,active:true}
+  ];
   const currency=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
   const form=document.getElementById('bookingForm');
   const phone=document.getElementById('phone');
@@ -16,19 +20,45 @@
   const backendEnabled=Boolean(window.DGBackend?.enabled);
   let booking=null;
   let cepData=null;
+  let packages=[];
 
   if(!backendEnabled){
     generateButton.disabled=true;
     paymentStatus.classList.add('pending');
     paymentStatus.querySelector('span').textContent='Pagamento indisponível. Recarregue a página ou contate a loja.';
   }
-  Object.entries(PACKAGES).forEach(([id,item])=>{
-    const label=document.createElement('label');label.className='package-option';
-    label.innerHTML=`<input type="radio" name="package" value="${id}"><span class="package-card"><b>${item.name}</b><small>${item.description}</small><strong>${currency.format(item.price)}</strong></span>`;
-    packageOptions.appendChild(label);
-  });
-  const requestedPackage=new URLSearchParams(location.search).get('pacote');
-  if(PACKAGES[requestedPackage])packageOptions.querySelector(`[value="${requestedPackage}"]`).checked=true;
+  function renderPackages(items){
+    packageOptions.replaceChildren();
+    items.forEach(item=>{
+      const label=document.createElement('label');label.className='package-option';
+      const input=document.createElement('input');input.type='radio';input.name='package';input.value=item.id;
+      const card=document.createElement('span');card.className='package-card';
+      const name=document.createElement('b');name.textContent=item.name;
+      const description=document.createElement('small');description.textContent=item.description;
+      const price=document.createElement('strong');price.textContent=currency.format(item.price);
+      card.append(name,description,price);label.append(input,card);packageOptions.appendChild(label);
+    });
+    const requestedPackage=new URLSearchParams(location.search).get('pacote');
+    const requested=items.find(item=>item.id===requestedPackage);
+    if(requested)packageOptions.querySelector(`[value="${CSS.escape(requested.id)}"]`).checked=true;
+  }
+  async function loadPackages(){
+    packageOptions.setAttribute('aria-busy','true');
+    try{
+      await window.DGBackend?.ready;
+      const loaded=backendEnabled?await window.DGBackend.getArmorPackages():FALLBACK_PACKAGES;
+      packages=(loaded||[]).filter(item=>item.active!==false);
+      if(!packages.length)throw new Error('Nenhum pacote de blindagem está disponível.');
+      renderPackages(packages);
+    }catch(error){
+      packages=[];
+      packageOptions.textContent='Nenhum pacote disponível no momento.';
+      packageError.textContent=error.message||'Não foi possível carregar os pacotes.';
+      generateButton.disabled=true;
+    }finally{
+      packageOptions.removeAttribute('aria-busy');
+    }
+  }
   const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);date.min=tomorrow.toISOString().split('T')[0];
 
   async function availableSlots(selectedDate){
@@ -86,11 +116,13 @@
   }
   function collectBooking(){
     const packageId=form.querySelector('[name="package"]:checked').value;
-    return{id:`DG-${Date.now()}`,customer:{name:document.getElementById('customerName').value.trim(),phone:phone.value.trim()},customerName:document.getElementById('customerName').value.trim(),phone:phone.value.trim(),device:document.getElementById('device').value.trim(),cep:cep.value.trim(),city:city.value,address:document.getElementById('address').value.trim(),serviceMode:serviceMode.value,packageId,packageName:PACKAGES[packageId].name,price:PACKAGES[packageId].price,date:date.value,time:timeSelect.value,slotId:timeSelect.selectedOptions[0]?.dataset.slotId||'',notes:document.getElementById('notes').value.trim(),createdAt:new Date().toISOString(),status:'awaiting_payment'};
+    const selectedPackage=packages.find(item=>item.id===packageId);
+    if(!selectedPackage)throw new Error('O pacote escolhido não está mais disponível.');
+    return{id:`DG-${Date.now()}`,customer:{name:document.getElementById('customerName').value.trim(),phone:phone.value.trim()},customerName:document.getElementById('customerName').value.trim(),phone:phone.value.trim(),device:document.getElementById('device').value.trim(),cep:cep.value.trim(),city:city.value,address:document.getElementById('address').value.trim(),serviceMode:serviceMode.value,packageId,packageName:selectedPackage.name,price:selectedPackage.price,date:date.value,time:timeSelect.value,slotId:timeSelect.selectedOptions[0]?.dataset.slotId||'',notes:document.getElementById('notes').value.trim(),createdAt:new Date().toISOString(),status:'awaiting_payment'};
   }
   function updateSummary(){if(!booking)return;document.getElementById('summaryEmpty').hidden=true;document.getElementById('summaryDetails').hidden=false;document.getElementById('summaryName').textContent=booking.customerName;document.getElementById('summaryDevice').textContent=booking.device;document.getElementById('summaryAddress').textContent=booking.serviceMode==='home'?`${booking.address}, ${booking.city}`:`Na loja — ${window.DGBackend?.config?.store?.address||'endereço a configurar'}`;document.getElementById('summaryPackage').textContent=booking.packageName;const formattedDate=new Intl.DateTimeFormat('pt-BR').format(new Date(`${booking.date}T12:00:00`));document.getElementById('summarySchedule').textContent=`${formattedDate} às ${booking.time}`;document.getElementById('summaryPrice').textContent=currency.format(booking.price)}
   form.addEventListener('input',event=>{if(event.target.matches('.field input,.field select'))setFieldError(event.target,'');if(event.target.name==='package')packageError.textContent='';if(event.target.id==='consent')consentError.textContent=''});
-  form.addEventListener('submit',event=>{event.preventDefault();if(!backendEnabled){window.DGStore?.showToast('O pagamento está indisponível. Recarregue a página ou contate a loja.');return}if(!validate()){form.querySelector('.invalid input,.invalid select')?.focus();return}booking=collectBooking();updateSummary();setStep(2)});
+  form.addEventListener('submit',event=>{event.preventDefault();if(!backendEnabled){window.DGStore?.showToast('O pagamento está indisponível. Recarregue a página ou contate a loja.');return}if(!validate()){form.querySelector('.invalid input,.invalid select')?.focus();return}try{booking=collectBooking();updateSummary();setStep(2)}catch(error){window.DGStore?.showToast(error.message)}});
 
   async function createPayment(){
     if(!booking)return;generateButton.disabled=true;generateButton.textContent='Gerando...';
@@ -106,4 +138,5 @@
   }
   generateButton.addEventListener('click',createPayment);
   document.getElementById('backToData').addEventListener('click',()=>{paymentStatus.classList.remove('pending');paymentStatus.querySelector('span').textContent='Pronto para abrir o Mercado Pago';generateButton.disabled=!backendEnabled;generateButton.textContent='Ir para o Mercado Pago';setStep(1)});
+  loadPackages();
 })();

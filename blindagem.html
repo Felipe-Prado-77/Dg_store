@@ -60,11 +60,9 @@
 
     <section class="packages-section" id="pacotes">
       <div class="container">
-        <div class="section-heading center"><span class="eyebrow">ESCOLHA SUA PROTEÇÃO</span><h2 class="section-title">Três pacotes, um único padrão de cuidado.</h2></div>
-        <div class="package-grid">
-          <article><span class="package-name">ESSENCIAL</span><h3>Tela</h3><p>Proteção para a área mais usada do aparelho.</p><ul><li>Aplicação na tela</li><li>Limpeza e preparação</li><li>Revisão de acabamento</li></ul><a href="agendamento.html?pacote=tela" class="button button-secondary">Selecionar</a></article>
-          <article class="featured"><span class="popular">MAIS ESCOLHIDO</span><span class="package-name">PLUS</span><h3>Tela + câmera</h3><p>Proteção para visualização e conjunto de lentes.</p><ul><li>Aplicação na tela</li><li>Proteção das câmeras</li><li>Revisão de acabamento</li></ul><a href="agendamento.html?pacote=tela-camera" class="button button-primary">Selecionar</a></article>
-          <article><span class="package-name">TOTAL</span><h3>Completo</h3><p>Tela, câmeras e traseira protegidas.</p><ul><li>Aplicação na tela</li><li>Câmeras e traseira</li><li>Revisão completa</li></ul><a href="agendamento.html?pacote=completo" class="button button-secondary">Selecionar</a></article>
+        <div class="section-heading center"><span class="eyebrow">ESCOLHA SUA PROTEÇÃO</span><h2 class="section-title">Pacotes para diferentes níveis de cuidado.</h2></div>
+        <div class="package-grid" id="armorPackageGrid" aria-live="polite">
+          <p class="packages-loading">Carregando pacotes disponíveis...</p>
         </div>
       </div>
     </section>
@@ -107,7 +105,10 @@
     <div class="footer-bottom"><div class="footer-bottom-inner"><p>© <span data-current-year></span> DG Store. Todos os direitos reservados.</p><p>Proteção premium para o seu aparelho.</p></div></div>
   </footer>
   <script src="common.js"></script>
-  <script src="blindagem.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="backend-config.js"></script>
+  <script src="backend.js"></script>
+  <script src="blindagem.js?v=2"></script>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js"></script>
 </body>
 </html>
