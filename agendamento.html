@@ -76,35 +76,12 @@
           <section class="booking-step" data-step-panel="2">
             <div class="card-heading"><span>ETAPA 2 DE 3</span><h2>Pagamento da reserva</h2><p>O agendamento só poderá ser concluído depois que o pagamento estiver aprovado.</p></div>
             <div class="payment-box">
-              <div class="payment-method"><span class="pix-mark">PIX</span><div><strong>Pagamento instantâneo</strong><p>A confirmação é vinculada à sua reserva.</p></div></div>
-              <div class="payment-placeholder" id="paymentPlaceholder"><span>◇</span><h3>Gere o pagamento</h3><p>Confira o valor no resumo e clique no botão abaixo.</p></div>
-              <div class="pix-area" id="pixArea" hidden>
-                <div class="qr-demo" aria-label="Espaço para QR Code Pix"><span>PIX</span><small>QR CODE</small></div>
-                <div class="pix-copy"><span>Código Pix copia e cola</span><div><input id="pixCode" type="text" readonly><button id="copyPix" type="button">Copiar</button></div><p id="paymentIdText"></p></div>
-              </div>
-              <div class="demo-notice" id="demoNotice" hidden><strong>Modo de demonstração</strong><p>Nenhum valor real será cobrado. Configure o Supabase e o Mercado Pago conforme o arquivo <code>BACKEND-SETUP.md</code> para ativar cobranças reais.</p></div>
-              <div class="payment-status" id="paymentStatus"><i></i><span>Pagamento ainda não gerado</span></div>
+              <div class="payment-method"><span class="pix-mark">MP</span><div><strong>Pagamento protegido pelo Mercado Pago</strong><p>Pix, cartão e demais opções disponíveis no ambiente seguro.</p></div></div>
+              <div class="payment-placeholder"><span>◇</span><h3>Continue para o pagamento</h3><p>Você será direcionado ao Mercado Pago. A reserva será criada somente após a confirmação do pagamento pelo servidor.</p></div>
+              <div class="payment-status" id="paymentStatus"><i></i><span>Pronto para abrir o Mercado Pago</span></div>
               <div class="payment-actions">
                 <button class="button button-secondary" id="backToData" type="button">Voltar</button>
                 <button class="button button-primary" id="generatePayment" type="button">Ir para o Mercado Pago</button>
-                <button class="button button-secondary" id="checkPayment" type="button" hidden>Verificar pagamento</button>
-                <button class="button button-primary" id="demoApprove" type="button" hidden>Simular aprovação</button>
-              </div>
-            </div>
-          </section>
-
-          <section class="booking-step" data-step-panel="3">
-            <div class="success-card">
-              <span class="success-icon">✓</span>
-              <span class="eyebrow">PAGAMENTO APROVADO</span>
-              <h2>Agora confirme seu agendamento</h2>
-              <p>O horário só será reservado quando você clicar no botão abaixo.</p>
-              <button class="button button-primary" id="confirmBooking" type="button">Concluir agendamento</button>
-              <div class="booking-confirmation" id="bookingConfirmation" hidden>
-                <span>AGENDAMENTO CONFIRMADO</span>
-                <h3 id="confirmationCode"></h3>
-                <p id="confirmationMessage"></p>
-                <a class="button button-secondary" href="index.html">Voltar para a loja</a>
               </div>
             </div>
           </section>
@@ -142,6 +119,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="backend-config.js"></script>
   <script src="backend.js"></script>
-  <script src="agendamento.js"></script>
+  <script src="agendamento.js?v=2"></script>
 </body>
 </html>

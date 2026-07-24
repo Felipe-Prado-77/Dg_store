@@ -11,21 +11,17 @@
   const packageOptions=document.getElementById('packageOptions');
   const packageError=document.getElementById('packageError');
   const consentError=document.getElementById('consentError');
-  const paymentPlaceholder=document.getElementById('paymentPlaceholder');
-  const pixArea=document.getElementById('pixArea');
-  const pixCode=document.getElementById('pixCode');
-  const paymentIdText=document.getElementById('paymentIdText');
   const paymentStatus=document.getElementById('paymentStatus');
-  const demoNotice=document.getElementById('demoNotice');
   const generateButton=document.getElementById('generatePayment');
-  const checkButton=document.getElementById('checkPayment');
-  const demoApprove=document.getElementById('demoApprove');
   const backendEnabled=Boolean(window.DGBackend?.enabled);
   let booking=null;
-  let payment={id:'',status:'not_created'};
   let cepData=null;
 
-  generateButton.textContent=backendEnabled?'Ir para o Mercado Pago':'Gerar pagamento demonstrativo';
+  if(!backendEnabled){
+    generateButton.disabled=true;
+    paymentStatus.classList.add('pending');
+    paymentStatus.querySelector('span').textContent='Pagamento indisponível. Recarregue a página ou contate a loja.';
+  }
   Object.entries(PACKAGES).forEach(([id,item])=>{
     const label=document.createElement('label');label.className='package-option';
     label.innerHTML=`<input type="radio" name="package" value="${id}"><span class="package-card"><b>${item.name}</b><small>${item.description}</small><strong>${currency.format(item.price)}</strong></span>`;
@@ -35,10 +31,9 @@
   if(PACKAGES[requestedPackage])packageOptions.querySelector(`[value="${requestedPackage}"]`).checked=true;
   const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);date.min=tomorrow.toISOString().split('T')[0];
 
-  function readLocalSlots(){try{const value=JSON.parse(localStorage.getItem('dgStoreAvailableSlots')||'[]');return Array.isArray(value)?value:[]}catch{return[]}}
   async function availableSlots(selectedDate){
-    if(backendEnabled)return window.DGBackend.getAvailableSlots(selectedDate);
-    return readLocalSlots().filter(slot=>slot.date===selectedDate);
+    if(!backendEnabled)throw new Error('O sistema de agendamento está temporariamente indisponível.');
+    return window.DGBackend.getAvailableSlots(selectedDate);
   }
   async function loadAvailableTimes(){
     const selectedDate=date.value;
@@ -95,26 +90,20 @@
   }
   function updateSummary(){if(!booking)return;document.getElementById('summaryEmpty').hidden=true;document.getElementById('summaryDetails').hidden=false;document.getElementById('summaryName').textContent=booking.customerName;document.getElementById('summaryDevice').textContent=booking.device;document.getElementById('summaryAddress').textContent=booking.serviceMode==='home'?`${booking.address}, ${booking.city}`:`Na loja — ${window.DGBackend?.config?.store?.address||'endereço a configurar'}`;document.getElementById('summaryPackage').textContent=booking.packageName;const formattedDate=new Intl.DateTimeFormat('pt-BR').format(new Date(`${booking.date}T12:00:00`));document.getElementById('summarySchedule').textContent=`${formattedDate} às ${booking.time}`;document.getElementById('summaryPrice').textContent=currency.format(booking.price)}
   form.addEventListener('input',event=>{if(event.target.matches('.field input,.field select'))setFieldError(event.target,'');if(event.target.name==='package')packageError.textContent='';if(event.target.id==='consent')consentError.textContent=''});
-  form.addEventListener('submit',event=>{event.preventDefault();if(!validate()){form.querySelector('.invalid input,.invalid select')?.focus();return}booking=collectBooking();updateSummary();setStep(2)});
+  form.addEventListener('submit',event=>{event.preventDefault();if(!backendEnabled){window.DGStore?.showToast('O pagamento está indisponível. Recarregue a página ou contate a loja.');return}if(!validate()){form.querySelector('.invalid input,.invalid select')?.focus();return}booking=collectBooking();updateSummary();setStep(2)});
 
-  function updatePaymentStatus(status){payment.status=status;paymentStatus.className=`payment-status ${status==='approved'?'approved':status==='pending'?'pending':''}`;paymentStatus.querySelector('span').textContent=status==='approved'?'Pagamento aprovado':status==='pending'?'Aguardando pagamento':'Pagamento ainda não gerado';if(status==='approved')setTimeout(()=>setStep(3),450)}
   async function createPayment(){
     if(!booking)return;generateButton.disabled=true;generateButton.textContent='Gerando...';
     try{
-      if(backendEnabled){
-        sessionStorage.setItem('dgCheckoutPhone',booking.phone);
-        const result=await window.DGBackend.createCheckout({kind:'booking',...booking,siteUrl:window.DGBackend.config.siteUrl});
-        if(!result?.initPoint)throw new Error('O Mercado Pago não retornou o endereço de pagamento.');
-        location.href=result.initPoint;return;
-      }
-      payment={id:`DEMO-${Date.now()}`,status:'pending',pixCode:`00020126-DGSTORE-DEMO-${booking.id}-${booking.price.toFixed(2)}`};
-      demoNotice.hidden=false;demoApprove.hidden=false;pixCode.value=payment.pixCode;paymentIdText.textContent=`Identificação: ${payment.id}`;paymentPlaceholder.hidden=true;pixArea.hidden=false;generateButton.hidden=true;updatePaymentStatus('pending');
-    }catch(error){window.DGStore?.showToast(error.message||'Erro ao gerar pagamento.');generateButton.disabled=false;generateButton.textContent=backendEnabled?'Ir para o Mercado Pago':'Gerar pagamento demonstrativo'}
+      if(!backendEnabled)throw new Error('O sistema de pagamento está indisponível.');
+      paymentStatus.classList.add('pending');
+      paymentStatus.querySelector('span').textContent='Conectando ao Mercado Pago...';
+      sessionStorage.setItem('dgCheckoutPhone',booking.phone);
+      const result=await window.DGBackend.createCheckout({kind:'booking',...booking,siteUrl:window.DGBackend.config.siteUrl});
+      if(!result?.initPoint)throw new Error('O Mercado Pago não retornou o endereço de pagamento.');
+      location.href=result.initPoint;
+    }catch(error){window.DGStore?.showToast(error.message||'Erro ao gerar pagamento.');paymentStatus.classList.remove('pending');paymentStatus.querySelector('span').textContent='Não foi possível abrir o pagamento.';generateButton.disabled=false;generateButton.textContent='Tentar novamente'}
   }
   generateButton.addEventListener('click',createPayment);
-  checkButton.addEventListener('click',()=>window.DGStore?.showToast('A confirmação real acontece automaticamente pelo Mercado Pago.'));
-  demoApprove.addEventListener('click',()=>updatePaymentStatus('approved'));
-  document.getElementById('copyPix').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(pixCode.value);window.DGStore?.showToast('Código Pix copiado.')}catch{pixCode.select();document.execCommand('copy')}});
-  document.getElementById('backToData').addEventListener('click',()=>{if(payment.status==='pending'&&!window.confirm('Voltar apagará o pagamento gerado. Deseja continuar?'))return;payment={id:'',status:'not_created'};paymentPlaceholder.hidden=false;pixArea.hidden=true;demoNotice.hidden=true;demoApprove.hidden=true;checkButton.hidden=true;generateButton.hidden=false;generateButton.disabled=false;generateButton.textContent=backendEnabled?'Ir para o Mercado Pago':'Gerar pagamento demonstrativo';updatePaymentStatus('not_created');setStep(1)});
-  document.getElementById('confirmBooking').addEventListener('click',event=>{if(!booking||payment.status!=='approved'){window.DGStore?.showToast('O pagamento precisa estar aprovado.');return}booking.status='confirmed';booking.paymentId=payment.id;booking.paidAt=new Date().toISOString();let bookings=[];try{bookings=JSON.parse(localStorage.getItem('dgStoreBookings')||'[]');if(!Array.isArray(bookings))bookings=[]}catch{bookings=[]}bookings.push(booking);localStorage.setItem('dgStoreBookings',JSON.stringify(bookings));localStorage.setItem('dgStoreAvailableSlots',JSON.stringify(readLocalSlots().filter(slot=>slot.id!==booking.slotId)));event.currentTarget.hidden=true;const confirmation=document.getElementById('bookingConfirmation');confirmation.hidden=false;document.getElementById('confirmationCode').textContent=booking.id;const formattedDate=new Intl.DateTimeFormat('pt-BR').format(new Date(`${booking.date}T12:00:00`));document.getElementById('confirmationMessage').textContent=`${booking.customerName}, sua blindagem ${booking.packageName} está reservada para ${formattedDate} às ${booking.time}.`});
+  document.getElementById('backToData').addEventListener('click',()=>{paymentStatus.classList.remove('pending');paymentStatus.querySelector('span').textContent='Pronto para abrir o Mercado Pago';generateButton.disabled=!backendEnabled;generateButton.textContent='Ir para o Mercado Pago';setStep(1)});
 })();
