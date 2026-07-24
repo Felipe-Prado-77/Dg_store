@@ -32,7 +32,14 @@
 
   <main>
     <section class="home-hero" id="inicio" aria-roledescription="carrossel" aria-label="Destaques da DG Store">
-      <img class="home-hero-image" id="homeBannerImage" src="assets/banner2.png" alt="Banner DG Store">
+      <div class="home-hero-media">
+        <img class="home-hero-image" id="homeBannerImage" src="assets/banner2.png" alt="Banner DG Store">
+        <div class="hero-carousel-controls" id="heroCarouselControls" hidden>
+          <button type="button" id="previousBanner" aria-label="Banner anterior">‹</button>
+          <div class="hero-carousel-dots" id="heroCarouselDots" aria-label="Escolher banner"></div>
+          <button type="button" id="nextBanner" aria-label="Próximo banner">›</button>
+        </div>
+      </div>
       <div class="home-hero-fallback">
         <span class="eyebrow">DG STORE</span>
         <h1 id="homeBannerTitle">Tecnologia com presença. Proteção com propósito.</h1>
@@ -41,11 +48,6 @@
           <a class="button button-primary" id="homeBannerButton" href="blindagem.html">Conhecer a blindagem</a>
           <a class="button button-secondary" href="#novidades">Ver novidades</a>
         </div>
-      </div>
-      <div class="hero-carousel-controls" id="heroCarouselControls" hidden>
-        <button type="button" id="previousBanner" aria-label="Banner anterior">‹</button>
-        <div class="hero-carousel-dots" id="heroCarouselDots" aria-label="Escolher banner"></div>
-        <button type="button" id="nextBanner" aria-label="Próximo banner">›</button>
       </div>
     </section>
 
@@ -148,6 +150,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="backend-config.js"></script>
   <script src="backend.js"></script>
+  <script src="site-settings.js"></script>
   <script src="home-content.js?v=1"></script>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.1.0/model-viewer.min.js"></script>
 </body>

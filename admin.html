@@ -184,11 +184,16 @@
 
         <section class="admin-section" data-section="configuracoes">
           <div class="section-heading">
-            <div><span class="section-kicker">OPERAÇÃO DA LOJA</span><h2>Configurações</h2><p>Defina retirada, entrega local, Correios e municípios atendidos pela blindagem.</p></div>
+            <div><span class="section-kicker">OPERAÇÃO DA LOJA</span><h2>Configurações</h2><p>Defina contatos, identificação, entrega e municípios atendidos pela blindagem.</p></div>
           </div>
           <article class="settings-panel">
             <form id="storeSettingsForm">
               <div class="settings-grid">
+                <label><span>WhatsApp da loja *</span><input id="settingWhatsapp" type="tel" inputmode="numeric" required placeholder="(19) 99999-9999"></label>
+                <label><span>Instagram</span><input id="settingInstagram" type="text" placeholder="@dgstore ou link completo"></label>
+                <label class="full"><span>E-mail de atendimento</span><input id="settingContactEmail" type="email" placeholder="contato@dgstore.com.br"></label>
+                <label><span>Nome empresarial / razão social</span><input id="settingLegalName" type="text" placeholder="Nome do fornecedor responsável"></label>
+                <label><span>CNPJ ou CPF do fornecedor</span><input id="settingDocumentNumber" type="text" placeholder="Documento usado pela empresa"></label>
                 <label class="full"><span>Endereço da loja *</span><input id="settingStoreAddress" type="text" required placeholder="Rua, número, bairro, cidade - SP"></label>
                 <label><span>CEP de origem *</span><input id="settingStoreCep" type="text" maxlength="9" required placeholder="00000-000"></label>
                 <label><span>Entrega local (R$)</span><input id="settingLocalPrice" type="number" min="0" step="0.01" required></label>
@@ -196,6 +201,7 @@
                 <label class="full"><span>Cidades com entrega local</span><textarea id="settingLocalCities" rows="4" placeholder="Uma cidade por linha"></textarea></label>
                 <label class="full"><span>Cidades com blindagem em domicílio</span><textarea id="settingArmorCities" rows="4" placeholder="Uma cidade por linha"></textarea></label>
               </div>
+              <div class="settings-note"><strong>Contatos e políticas</strong><p>O WhatsApp será usado no rodapé e na confirmação da blindagem. Nome empresarial, documento, endereço e e-mail ajudam a identificar corretamente o fornecedor nas políticas da loja.</p></div>
               <div class="settings-note"><strong>Correios</strong><p>Para cotações reais de PAC e SEDEX, configure o token do Melhor Envio nas variáveis secretas do backend. Sem ele, o sistema usa o valor provisório acima.</p></div>
               <button class="primary-button" type="submit">Salvar configurações</button>
             </form>

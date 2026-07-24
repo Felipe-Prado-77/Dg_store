@@ -25,20 +25,78 @@
   <button class="menu-overlay" type="button" aria-label="Fechar menu"></button>
 
   <main>
-    <section class="policy-hero"><div class="container"><span class="eyebrow">TRANSPARÊNCIA</span><h1>Políticas da loja</h1><p>Regras básicas para compras, entregas e serviços de blindagem.</p><div class="draft-notice"><strong>Modelo para revisão.</strong> Preencha os dados da empresa e valide o texto com um profissional antes de publicar.</div></div></section>
+    <section class="policy-hero"><div class="container"><span class="eyebrow">TRANSPARÊNCIA</span><h1>Políticas da loja</h1><p>Informações sobre compras, privacidade, entregas, trocas e serviços de blindagem.</p><div class="draft-notice"><strong>Última atualização: 24 de julho de 2026.</strong> Antes da publicação definitiva, preencha os dados do fornecedor no painel e faça uma revisão jurídica adequada à operação real da DG Store.</div></div></section>
     <section class="policy-section"><div class="container policy-layout">
-      <nav class="policy-nav" aria-label="Índice das políticas"><a href="#privacidade">Privacidade</a><a href="#termos">Termos de uso</a><a href="#trocas">Trocas e devoluções</a><a href="#entrega">Entrega</a><a href="#agendamento">Agendamento</a></nav>
+      <nav class="policy-nav" aria-label="Índice das políticas"><a href="#identificacao">Identificação</a><a href="#privacidade">Privacidade</a><a href="#compras">Compras e pagamento</a><a href="#arrependimento">Arrependimento</a><a href="#garantia">Trocas e garantia</a><a href="#entrega">Entrega</a><a href="#agendamento">Blindagem</a><a href="#atendimento">Atendimento</a></nav>
       <div class="policy-content">
-        <article id="privacidade"><span>01</span><h2>Privacidade e dados</h2><p>Os dados informados pelo cliente devem ser usados somente para processar compras, entregar pedidos, prestar atendimento e realizar agendamentos. O backend deverá limitar acessos, registrar consentimentos e permitir correção ou exclusão quando aplicável.</p><p>Dados de cartão não devem ser armazenados pela loja. O pagamento real deverá ser processado por um provedor certificado.</p></article>
-        <article id="termos"><span>02</span><h2>Termos de uso</h2><p>Preços, disponibilidade e prazos precisam ser confirmados no fechamento da compra. Fotos podem ser ilustrativas, mas descrição, variação e condição do produto devem corresponder ao item vendido.</p><p>Cadastros falsos, tentativas de fraude e uso indevido do site podem resultar no cancelamento da operação.</p></article>
-        <article id="trocas"><span>03</span><h2>Trocas e devoluções</h2><p>O cliente deve receber instruções claras para solicitar troca, devolução ou suporte, informando o número do pedido e o motivo. Prazos e condições devem seguir a legislação aplicável e a natureza do produto.</p><p>Antes do lançamento, informe aqui o canal oficial, o endereço de devolução e os critérios de análise.</p></article>
-        <article id="entrega"><span>04</span><h2>Entrega e rastreamento</h2><p>O prazo começa após a aprovação do pagamento. Para municípios próximos, o cliente poderá escolher entrega realizada pela DG Store ou retirada na loja. Para outras localidades, serão exibidas modalidades dos Correios quando a integração estiver disponível.</p><p>O cliente é responsável por informar um endereço completo e garantir o recebimento. Mudanças de status podem ser consultadas com o ID do pedido e o telefone cadastrado.</p></article>
-        <article id="agendamento"><span>05</span><h2>Blindagem e cancelamento</h2><p>A blindagem em domicílio está disponível em Americana, Nova Odessa, Santa Bárbara d’Oeste, Sumaré e Hortolândia. Clientes de outros municípios poderão realizar o serviço na loja.</p><p>O agendamento só é concluído após a aprovação do pagamento. Antes da publicação, a DG Store deverá definir prazo mínimo para reagendamento, regras de atraso, reembolso e ausência do cliente.</p></article>
+        <article id="identificacao">
+          <span>01</span><h2>Identificação do fornecedor</h2>
+          <div class="policy-business">
+            <p><strong>Fornecedor:</strong> <span data-store-legal-name></span></p>
+            <p><strong>CNPJ/CPF:</strong> <span data-store-document></span></p>
+            <p><strong>Endereço:</strong> <span data-store-address></span></p>
+            <p><strong>E-mail:</strong> <span data-store-email></span></p>
+            <p><strong>WhatsApp:</strong> <a data-store-whatsapp-link><span data-store-whatsapp></span></a></p>
+          </div>
+          <p>A DG Store oferece produtos e serviços de proteção para dispositivos. As informações de preço, características, disponibilidade, pagamento e entrega são apresentadas antes da confirmação da contratação.</p>
+        </article>
+
+        <article id="privacidade">
+          <span>02</span><h2>Privacidade e proteção de dados</h2>
+          <p>Podemos tratar nome, telefone, e-mail, endereço, CEP, dados do aparelho, itens comprados, informações do agendamento e registros de pagamento para executar a compra ou o serviço, entregar pedidos, prevenir fraudes, prestar atendimento e cumprir obrigações legais.</p>
+          <p>Os dados poderão ser compartilhados somente quando necessário com prestadores envolvidos na operação, como Supabase, Mercado Pago, transportadoras, serviços de cálculo de frete e WhatsApp. A DG Store não armazena o número completo do cartão; o pagamento é processado no ambiente do Mercado Pago.</p>
+          <p>O site utiliza armazenamento local do navegador para manter o carrinho e preferências essenciais. O titular pode solicitar confirmação do tratamento, acesso, correção, informação sobre compartilhamento e demais direitos previstos na LGPD pelo canal oficial de atendimento. Exclusão ou anonimização será realizada quando aplicável, respeitando obrigações legais de conservação.</p>
+        </article>
+
+        <article id="compras">
+          <span>03</span><h2>Compras, preços e pagamento</h2>
+          <p>O preço válido é o apresentado no resumo final da compra ou do agendamento. Estoque, pacote, frete e valor são conferidos novamente pelo servidor antes da criação do pagamento. A contratação é confirmada somente após a aprovação do Mercado Pago.</p>
+          <p>Em caso de erro evidente de informação, indisponibilidade de estoque ou suspeita de fraude, a DG Store entrará em contato e poderá cancelar a operação com restituição integral dos valores pagos, sem prejuízo dos direitos assegurados ao consumidor.</p>
+        </article>
+
+        <article id="arrependimento">
+          <span>04</span><h2>Direito de arrependimento</h2>
+          <p>Nas compras ou contratações realizadas pela internet, telefone ou fora do estabelecimento comercial, o consumidor poderá desistir no prazo legal de 7 dias corridos, contado da assinatura da contratação ou do recebimento do produto ou serviço, conforme o caso.</p>
+          <p>O pedido pode ser feito pelo WhatsApp ou e-mail cadastrados nesta página. Quando o direito de arrependimento for aplicável, os valores pagos serão restituídos e a devolução não gerará custo ao consumidor. A DG Store enviará confirmação do recebimento da solicitação.</p>
+        </article>
+
+        <article id="garantia">
+          <span>05</span><h2>Trocas, devoluções e garantia</h2>
+          <p>Produtos duráveis possuem garantia legal de 90 dias para vícios aparentes ou de fácil constatação, contados do recebimento. Para vício oculto, o prazo começa quando o problema se torna evidente. Garantias adicionais do fabricante, quando existirem, serão informadas na oferta e complementam a garantia legal.</p>
+          <p>Para solicitar atendimento, informe o ID do pedido, telefone cadastrado, descrição do problema e, quando possível, fotos ou vídeos. A análise não limita os direitos previstos no Código de Defesa do Consumidor. Danos decorrentes de mau uso, queda, contato com líquidos ou intervenção de terceiros poderão ser analisados tecnicamente, sem presunção automática contra o consumidor.</p>
+          <p>Trocas por preferência de cor, modelo ou tamanho, fora das hipóteses legais, dependerão da disponibilidade e da política comercial informada no momento da compra.</p>
+        </article>
+
+        <article id="entrega">
+          <span>06</span><h2>Entrega, retirada e rastreamento</h2>
+          <p>O prazo estimado começa após a aprovação do pagamento. Para regiões próximas, poderão ser oferecidas entrega pela DG Store e retirada no endereço cadastrado. Para outras localidades, serão apresentadas modalidades disponíveis dos Correios por meio da integração de frete.</p>
+          <p>O cliente deve informar endereço completo e correto, além de garantir que alguém possa receber o pedido. Se houver erro no endereço ou nova tentativa causada por informação incorreta, os custos adicionais serão informados antes de qualquer nova cobrança. Atraso, avaria ou extravio atribuível ao fornecedor ou transportador será tratado sem afastar os direitos do consumidor.</p>
+          <p>O andamento pode ser consultado em “Rastrear compra” usando o ID do pedido e o telefone cadastrado.</p>
+        </article>
+
+        <article id="agendamento">
+          <span>07</span><h2>Blindagem e agendamento</h2>
+          <p>O horário é reservado somente após a aprovação do pagamento. A confirmação final é enviada pelo cliente no WhatsApp com nome, local, pacote, data, horário e código do agendamento.</p>
+          <p>O atendimento em domicílio está disponível apenas para os municípios mostrados no formulário. Para outras cidades, o serviço poderá ser realizado na DG Store. A compatibilidade do material será conferida conforme o modelo do aparelho; se não houver material compatível antes da execução, o cliente poderá escolher nova data ou receber o reembolso integral.</p>
+          <p>A blindagem ajuda a reduzir riscos e marcas de uso, mas não torna o aparelho indestrutível nem garante proteção contra quedas, impactos severos, líquidos ou danos internos. A garantia do serviço cobre vícios de aplicação nos termos legais, sem excluir outros direitos aplicáveis.</p>
+          <p>Pedidos de cancelamento ou reagendamento devem ser feitos assim que possível pelo canal oficial. Atrasos podem exigir mudança de horário para não prejudicar os atendimentos seguintes. Qualquer regra operacional será aplicada de forma compatível com o direito de arrependimento e demais garantias legais.</p>
+        </article>
+
+        <article id="atendimento">
+          <span>08</span><h2>Atendimento e solicitações</h2>
+          <p>Para dúvidas, reclamações, correções de dados, cancelamentos, trocas ou exercício de direitos, utilize o WhatsApp <a data-store-whatsapp-link><span data-store-whatsapp></span></a> ou o e-mail <span data-store-email></span>. Guarde o ID do pedido ou agendamento para agilizar o atendimento. A solicitação eletrônica será confirmada após o recebimento e respondida em até 5 dias.</p>
+          <p>Estas políticas podem ser atualizadas para refletir mudanças legais ou operacionais. Alterações não reduzem direitos já adquiridos e a versão aplicável à contratação será a disponível na data da compra.</p>
+          <div class="policy-sources"><strong>Referências legais:</strong><a href="https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm" target="_blank" rel="noopener">Código de Defesa do Consumidor</a><a href="https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/decreto/d7962.htm" target="_blank" rel="noopener">Decreto do Comércio Eletrônico</a><a href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709compilado.htm" target="_blank" rel="noopener">Lei Geral de Proteção de Dados</a></div>
+        </article>
       </div>
     </div></section>
   </main>
 
   <footer class="site-footer"><div class="footer-main"><div class="footer-brand"><img src="assets/logo.png" alt="DG Store"><p>Tecnologia, proteção e cuidado para acompanhar o seu dia a dia.</p></div><div class="footer-column"><h3>Navegação</h3><a href="index.html">A loja</a><a href="produtos.html">Produtos</a><a href="relogios.html">Relógios</a><a href="carrinho.html">Carrinho</a></div><div class="footer-column"><h3>Atendimento</h3><a href="agendamento.html">Agendar blindagem</a><a href="rastreio.html">Rastrear compra</a><a href="blindagem.html#faq">Perguntas frequentes</a></div><div class="footer-column"><h3>Informações</h3><a href="politicas.html">Políticas da loja</a><p>Pagamento protegido</p><p>Acompanhamento online</p></div></div><div class="footer-bottom"><div class="footer-bottom-inner"><p>© <span data-current-year></span> DG Store. Todos os direitos reservados.</p><p>Informações claras em cada etapa.</p></div></div></footer>
   <script src="common.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="backend-config.js"></script>
+  <script src="backend.js"></script>
+  <script src="site-settings.js"></script>
 </body>
 </html>

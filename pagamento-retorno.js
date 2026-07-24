@@ -11,18 +11,62 @@
   const actions=document.getElementById('returnActions');
   const primary=document.getElementById('returnPrimary');
   const checkAgain=document.getElementById('checkAgain');
+  const whatsappNote=document.getElementById('whatsappRedirectNote');
   let attempts=0;
 
-  function showApproved(data){
+  function formatDate(value){
+    const date=value?new Date(`${value}T12:00:00`):null;
+    return date&&!Number.isNaN(date.getTime())?new Intl.DateTimeFormat('pt-BR').format(date):String(value||'');
+  }
+  function bookingMessage(data){
+    const booking=data.booking||{};
+    const locationText=booking.serviceMode==='home'
+      ? `A domicílio — ${[booking.address,booking.city].filter(Boolean).join(', ')}`
+      : `Na DG Store — ${data.storeAddress||'endereço da loja'}`;
+    return [
+      'Olá! Quero confirmar minha blindagem.',
+      '',
+      `Nome: ${booking.customerName||'Cliente'}`,
+      `Local: ${locationText}`,
+      `Pacote: ${booking.packageName||'Blindagem'}`,
+      `Data: ${formatDate(booking.date)}`,
+      `Horário: ${String(booking.time||'').slice(0,5)}`,
+      `Código: ${data.resultId}`,
+      '',
+      'Confirmado ✅'
+    ].join('\n');
+  }
+  async function showApproved(data){
     loader.className='status-loader approved';
     eyebrow.textContent='PAGAMENTO APROVADO';
     title.textContent=data.kind==='booking'?'Blindagem agendada':'Pedido confirmado';
-    message.textContent=data.kind==='booking'?'Seu horário foi reservado. Guarde o código abaixo.':'Seu pedido já está no sistema. Guarde o código para acompanhar a entrega.';
+    message.textContent=data.kind==='booking'?'Seu horário foi reservado. Agora confirme os dados pelo WhatsApp da DG Store.':'Seu pedido já está no sistema. Guarde o código para acompanhar a entrega.';
     code.hidden=false;code.textContent=data.resultId;
     actions.hidden=false;
     const phone=sessionStorage.getItem('dgCheckoutPhone')||'';
-    primary.href=data.kind==='booking'?'index.html':`rastreio.html?id=${encodeURIComponent(data.resultId)}&phone=${encodeURIComponent(phone)}`;
-    primary.textContent=data.kind==='booking'?'Voltar para a loja':'Rastrear pedido';
+    if(data.kind==='booking'){
+      await window.DGContacts?.ready;
+      const whatsapp=data.storeWhatsapp||window.DGBackend?.config?.store?.whatsapp||'';
+      const whatsappUrl=window.DGContacts?.whatsappUrl(whatsapp,bookingMessage(data))||'';
+      if(whatsappUrl){
+        primary.href=whatsappUrl;
+        primary.textContent='Confirmar no WhatsApp';
+        whatsappNote.hidden=false;
+        const redirectKey=`dgBookingWhatsappOpened:${session}`;
+        if(!sessionStorage.getItem(redirectKey)){
+          sessionStorage.setItem(redirectKey,'true');
+          setTimeout(()=>location.assign(whatsappUrl),1800);
+        }
+      }else{
+        primary.href='index.html';
+        primary.textContent='Voltar para a loja';
+        whatsappNote.hidden=false;
+        whatsappNote.textContent='O pagamento foi confirmado, mas o WhatsApp da loja ainda não foi configurado no painel administrativo.';
+      }
+    }else{
+      primary.href=`rastreio.html?id=${encodeURIComponent(data.resultId)}&phone=${encodeURIComponent(phone)}`;
+      primary.textContent='Rastrear pedido';
+    }
     if(data.kind==='order'){localStorage.setItem('dgStoreCart','[]');window.DGStore?.updateCartBadge?.()}
   }
   function showPending(){
@@ -44,7 +88,7 @@
     if(!session||!window.DGBackend?.enabled){showFailed('A referência do pagamento ou o backend não está configurado.');return}
     try{
       const data=await window.DGBackend.paymentStatus(session,paymentId);
-      if(data.status==='approved'&&data.resultId){showApproved(data);return}
+      if(data.status==='approved'&&data.resultId){await showApproved(data);return}
       if(['rejected','cancelled','expired'].includes(data.status)||result==='failure'){showFailed();return}
       attempts+=1;
       if(attempts<4){setTimeout(check,2500);return}

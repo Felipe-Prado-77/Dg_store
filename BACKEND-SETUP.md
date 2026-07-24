@@ -21,9 +21,10 @@ Se o projeto já estava funcionando antes da inclusão de pacotes e banners, bas
 ```bash
 npx supabase db push
 npx supabase functions deploy create-checkout
+npx supabase functions deploy payment-status --no-verify-jwt
 ```
 
-O primeiro comando aplica somente a nova migration. O segundo atualiza o cálculo seguro do pagamento para buscar o pacote e o preço diretamente no banco.
+O primeiro comando aplica somente as migrations novas. As funções atualizadas buscam o preço do pacote no banco e liberam os dados da confirmação pelo WhatsApp somente depois que a sessão aparece como aprovada.
 
 ## 2. Configurar o frontend
 
@@ -87,6 +88,9 @@ O pedido ou agendamento só é confirmado depois que o webhook:
 
 Entre no painel e abra **Configurações**. Preencha:
 
+- WhatsApp e Instagram;
+- e-mail de atendimento;
+- nome empresarial e CNPJ/CPF do fornecedor;
 - endereço da loja;
 - CEP de origem;
 - valor da entrega local;
@@ -132,15 +136,18 @@ O `config.toml` já define quais funções públicas não usam JWT. O webhook va
 
 1. Cadastre um produto no painel.
 2. Edite um pacote de blindagem e confirme se o novo preço aparece no agendamento.
-3. Cadastre dois banners, teste o carrossel e depois deixe somente um ativo para testar o modo estático.
-4. Cadastre horários para a blindagem.
-5. Use credenciais e contas de teste do Mercado Pago.
-6. Faça uma compra e use o simulador de Webhooks do painel do Mercado Pago para validar a notificação de teste.
-7. Confirme se o pedido aprovado aparece no painel.
-8. Mude os status e teste o rastreio.
-9. Teste CEP local, retirada e CEP distante.
-10. Teste blindagem dentro e fora dos cinco municípios.
-11. Só depois troque tokens de teste por produção.
+3. Cadastre WhatsApp, Instagram e os dados do fornecedor.
+4. Cadastre dois banners, teste o carrossel e depois deixe somente um ativo para testar o modo estático.
+5. Cadastre horários para a blindagem.
+6. Use credenciais e contas de teste do Mercado Pago.
+7. Pague uma blindagem de teste e confirme se o WhatsApp abre com a mensagem correta.
+8. Faça uma compra e use o simulador de Webhooks do painel do Mercado Pago para validar a notificação de teste.
+9. Confirme se o pedido aprovado aparece no painel.
+10. Mude os status e teste o rastreio.
+11. Teste CEP local, retirada e CEP distante.
+12. Teste blindagem dentro e fora dos cinco municípios.
+13. Revise `politicas.html` com os dados reais da empresa e orientação jurídica.
+14. Só depois troque tokens de teste por produção.
 
 ## 8. Segurança e manutenção
 

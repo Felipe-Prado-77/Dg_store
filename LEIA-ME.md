@@ -11,7 +11,7 @@ Para ativar o backend, siga [BACKEND-SETUP.md](BACKEND-SETUP.md).
 
 ## Arquivos
 
-- `index.html` + `style.css` + `home-content.js`: página principal com banner estático ou carrossel administrável.
+- `index.html` + `style.css` + `home-content.js`: página principal com banner estático ou carrossel administrável e texto abaixo da imagem.
 - `blindagem.html` + `blindagem.css` + `blindagem.js`: informações, pacotes e FAQ.
 - `carrinho.html` + `carrinho.css` + `carrinho.js`: carrinho salvo no `localStorage`.
 - `checkout.html` + `checkout.css` + `checkout.js`: dados do cliente, endereço, frete e pagamento obrigatório pelo Mercado Pago.
@@ -26,6 +26,7 @@ Para ativar o backend, siga [BACKEND-SETUP.md](BACKEND-SETUP.md).
 - `store-data.js`: ponto único para conectar catálogo e cálculo de frete ao backend futuramente.
 - `common.css` + `common.js`: menu, rodapé, responsividade e contador do carrinho compartilhados.
 - `backend-config.js` + `backend.js`: conexão pública e adaptador do Supabase.
+- `site-settings.js`: aplica WhatsApp, Instagram e dados públicos nos rodapés e nas políticas.
 - `admin-login.html`: login protegido do administrador.
 - `pagamento-retorno.html`: confirmação do Mercado Pago após o checkout.
 - `supabase/`: migrations, regras RLS, storage, cron e Edge Functions.
@@ -44,6 +45,7 @@ Abra `dashboard.html` ou `admin.html` para acessar o painel. Nele é possível:
 - adicionar, editar, destacar, ativar e excluir pacotes de blindagem com preço e itens incluídos;
 - adicionar, editar, ativar, destacar, desativar e excluir produtos;
 - adicionar, ordenar, ativar, editar e excluir banners da página inicial;
+- cadastrar WhatsApp, Instagram, e-mail e identificação do fornecedor;
 - escolher se o produto aparece em `Produtos` ou em `Relógios`;
 - cadastrar marca, modelo, garantia, promoção, dimensões, peso, imagens, especificações e variações;
 - informar o custo do produto para estimar o lucro.
@@ -63,6 +65,16 @@ O logo e o banner estão incluídos. Os modelos 3D abaixo eram referências do s
 Os pacotes ficam na tabela `armor_packages`. A página de blindagem e o agendamento mostram somente os ativos, na ordem definida pelo administrador. O preço enviado pelo navegador nunca é aceito como fonte de verdade: a função `create-checkout` busca novamente o pacote ativo e o preço no banco antes de criar o pagamento.
 
 Os banners ficam na tabela `home_banners`. Um único banner ativo permanece estático. Com dois ou mais, a página inicial cria controles e alternância automática. As imagens enviadas pelo painel são salvas no bucket público `site-images`.
+
+O texto do banner aparece abaixo da imagem para não esconder detalhes da arte.
+
+## Confirmação da blindagem pelo WhatsApp
+
+Depois que o servidor confirma o pagamento da blindagem, `payment-status` devolve somente os dados necessários daquela reserva. A página de retorno monta uma mensagem com nome, local, endereço quando for em domicílio, pacote, data, horário e código.
+
+O WhatsApp é aberto automaticamente com a mensagem preenchida. Por segurança e pelas regras do WhatsApp, o cliente ainda precisa tocar em **Enviar**. Envio sem essa confirmação exigiria uma integração separada com a API oficial do WhatsApp Business.
+
+O número usado nesse fluxo é o mesmo cadastrado em **Painel administrativo → Configurações** e exibido no rodapé.
 
 ## Checkout e pagamento real
 
