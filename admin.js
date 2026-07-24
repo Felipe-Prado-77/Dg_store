@@ -8,8 +8,17 @@
   const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
   const dateFormatter = new Intl.DateTimeFormat('pt-BR');
   const monthFormatter = new Intl.DateTimeFormat('pt-BR', { month: 'short' });
-  const sectionTitles = { dashboard: 'Dashboard', vendas: 'Vendas', blindagens: 'Blindagens', horarios: 'Horários', produtos: 'Produtos' };
-  const orderLabels = { em_preparo: 'Em preparo', a_caminho: 'A caminho', entregue: 'Entregue' };
+  const sectionTitles = { dashboard: 'Dashboard', vendas: 'Vendas', blindagens: 'Blindagens', horarios: 'Horários', produtos: 'Produtos', configuracoes: 'Configurações' };
+  const orderLabels = {
+    pagamento_pendente: 'Pagamento pendente',
+    pagamento_aprovado: 'Pagamento aprovado',
+    pedido_confirmado: 'Pedido confirmado',
+    em_preparo: 'Em preparo',
+    aguardando_transportadora: 'Aguardando transportadora',
+    a_caminho: 'A caminho',
+    entregue: 'Entregue',
+    cancelado: 'Cancelado'
+  };
   const bookingLabels = { confirmed: 'Confirmada', completed: 'Efetuada', cancelled: 'Cancelada', awaiting_payment: 'Aguardando pagamento' };
   let currentSection = 'dashboard';
   let chartResizeTimer;
@@ -22,7 +31,12 @@
       return [];
     }
   }
-  function write(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+  function write(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+    if (window.DGBackend?.enabled) {
+      window.DGBackend.syncCollection(key, value).catch(error => showToast(`Não foi possível sincronizar: ${error.message}`));
+    }
+  }
   function money(value) { return currency.format(Number(value) || 0); }
   function safeDate(value) {
     const date = value ? new Date(value.includes('T') ? value : `${value}T12:00:00`) : null;
@@ -84,14 +98,20 @@
   function renderDashboard() {
     const orders = read(KEYS.orders);
     const bookings = read(KEYS.bookings);
-    const validOrders = orders.filter(order => order.status !== 'cancelled');
+    const validOrders = orders.filter(order => !['cancelado', 'cancelled'].includes(order.status));
     const validBookings = bookings.filter(booking => ['confirmed', 'completed'].includes(booking.status));
+    const products = read(KEYS.products);
     const totalProfit = validOrders.reduce((sum, order) => sum + orderProfit(order), 0) + validBookings.reduce((sum, booking) => sum + bookingProfit(booking), 0);
     const monthProfit = validOrders.filter(order => isSameMonth(eventDate(order))).reduce((sum, order) => sum + orderProfit(order), 0) + validBookings.filter(booking => isSameMonth(eventDate(booking))).reduce((sum, booking) => sum + bookingProfit(booking), 0);
+    const revenue = validOrders.reduce((sum, order) => sum + (Number(order.total) || 0), 0);
     document.getElementById('totalProfit').textContent = money(totalProfit);
     document.getElementById('monthProfit').textContent = money(monthProfit);
     document.getElementById('salesCount').textContent = validOrders.length;
     document.getElementById('completedBookings').textContent = bookings.filter(booking => booking.status === 'completed').length;
+    document.getElementById('totalRevenue').textContent = money(revenue);
+    document.getElementById('averageTicket').textContent = money(validOrders.length ? revenue / validOrders.length : 0);
+    document.getElementById('pendingOrders').textContent = validOrders.filter(order => order.status !== 'entregue').length;
+    document.getElementById('dashboardLowStock').textContent = products.filter(product => Number(product.stock) <= 5).length;
     document.getElementById('chartTotal').textContent = money(totalProfit);
     drawProfitChart(validOrders, validBookings);
     renderTopProducts(validOrders);
@@ -240,9 +260,21 @@
     row.append(idCell, productsCell, customerCell, phoneCell, addressCell, totalCell, statusCell, actionCell); return row;
   }
   function cell(primary, secondary = '') { const td = document.createElement('td'); const strong = document.createElement('strong'); strong.className = 'cell-primary'; strong.textContent = escapeText(primary); td.appendChild(strong); if (secondary) { const small = document.createElement('span'); small.className = 'cell-secondary'; small.textContent = escapeText(secondary); td.appendChild(small); } return td; }
-  function statusClass(status) { return status === 'a_caminho' ? 'shipping' : status === 'entregue' ? 'delivered' : status === 'completed' ? 'completed' : status === 'cancelled' ? 'cancelled' : 'preparing'; }
-  function updateOrderStatus(id, status) { const orders = read(KEYS.orders).map(order => order.id === id ? { ...order, status, statusUpdatedAt: new Date().toISOString() } : order); write(KEYS.orders, orders); showToast(`Pedido ${id}: ${orderLabels[status]}.`); renderOrders(); }
-  function deleteOrder(id) { if (!window.confirm(`Excluir o pedido ${id}?`)) return; write(KEYS.orders, read(KEYS.orders).filter(order => order.id !== id)); renderOrders(); showToast('Pedido excluído.'); }
+  function statusClass(status) { return status === 'a_caminho' ? 'shipping' : status === 'entregue' ? 'delivered' : status === 'completed' ? 'completed' : ['cancelado', 'cancelled'].includes(status) ? 'cancelled' : 'preparing'; }
+  function updateOrderStatus(id, status) {
+    const changedAt = new Date().toISOString();
+    const orders = read(KEYS.orders).map(order => {
+      if (order.id !== id) return order;
+      const history = Array.isArray(order.statusHistory) ? order.statusHistory : [];
+      return { ...order, status, statusUpdatedAt: changedAt, statusHistory: [...history, { status, at: changedAt }] };
+    });
+    localStorage.setItem(KEYS.orders, JSON.stringify(orders));
+    const changed = orders.find(order => order.id === id);
+    window.DGBackend?.syncRecord(KEYS.orders, changed).catch(error => showToast(error.message));
+    showToast(`Pedido ${id}: ${orderLabels[status]}.`);
+    renderOrders();
+  }
+  function deleteOrder(id) { if (!window.confirm(`Excluir o pedido ${id}?`)) return; localStorage.setItem(KEYS.orders, JSON.stringify(read(KEYS.orders).filter(order => order.id !== id))); window.DGBackend?.deleteRecord(KEYS.orders, id).catch(error => showToast(error.message)); renderOrders(); showToast('Pedido excluído.'); }
   document.getElementById('orderSearch').addEventListener('input', renderOrders);
   document.getElementById('orderStatusFilter').addEventListener('change', renderOrders);
 
@@ -272,11 +304,18 @@
   }
   function updateBookingStatus(id, status) {
     const bookings = read(KEYS.bookings); const booking = bookings.find(item => item.id === id);
-    write(KEYS.bookings, bookings.map(item => item.id === id ? { ...item, status, statusUpdatedAt: new Date().toISOString() } : item));
+    const updatedBookings = bookings.map(item => item.id === id ? { ...item, status, statusUpdatedAt: new Date().toISOString() } : item);
+    localStorage.setItem(KEYS.bookings, JSON.stringify(updatedBookings));
+    window.DGBackend?.syncRecord(KEYS.bookings, updatedBookings.find(item => item.id === id)).catch(error => showToast(error.message));
     if (status === 'cancelled' && booking && booking.date && booking.time) {
       const slots = read(KEYS.slots);
-      if (!slots.some(slot => slot.date === booking.date && slot.time === booking.time)) slots.push({ id: `SLOT-${Date.now()}`, date: booking.date, time: booking.time, duration: 60, createdAt: new Date().toISOString() });
-      write(KEYS.slots, slots);
+      const existing = slots.find(slot => slot.id === booking.slotId || (slot.date === booking.date && slot.time === booking.time));
+      const released = existing
+        ? { ...existing, status: 'available', reservationSessionId: '', updatedAt: new Date().toISOString() }
+        : { id: `SLOT-${Date.now()}`, date: booking.date, time: booking.time, duration: 60, status: 'available', createdAt: new Date().toISOString() };
+      const updatedSlots = existing ? slots.map(slot => slot.id === existing.id ? released : slot) : [...slots, released];
+      localStorage.setItem(KEYS.slots, JSON.stringify(updatedSlots));
+      window.DGBackend?.syncRecord(KEYS.slots, released).catch(error => showToast(error.message));
     }
     renderBookings(); showToast(`Blindagem marcada como ${bookingLabels[status].toLowerCase()}.`);
   }
@@ -291,13 +330,16 @@
     if (!date || !time) return;
     const slots = read(KEYS.slots);
     if (slots.some(slot => slot.date === date && slot.time === time)) { showToast('Este horário já foi cadastrado.'); return; }
-    slots.push({ id: `SLOT-${Date.now()}`, date, time, duration, createdAt: new Date().toISOString() }); write(KEYS.slots, slots);
+    const newSlot = { id: `SLOT-${Date.now()}`, date, time, duration, status: 'available', createdAt: new Date().toISOString() };
+    slots.push(newSlot);
+    localStorage.setItem(KEYS.slots, JSON.stringify(slots));
+    window.DGBackend?.syncRecord(KEYS.slots, newSlot).catch(error => showToast(error.message));
     event.target.reset(); slotDate.min = localDateValue(new Date(Date.now() + 86400000)); renderSlots(); showToast('Horário disponibilizado para os clientes.');
   });
   function renderSlots() {
     const filterSelect = document.getElementById('slotDateFilter');
     const currentFilter = filterSelect.value;
-    const allSlots = read(KEYS.slots).filter(slot => safeDate(slot.date) >= new Date(new Date().setHours(0, 0, 0, 0))).sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
+    const allSlots = read(KEYS.slots).filter(slot => (slot.status || 'available') === 'available' && safeDate(slot.date) >= new Date(new Date().setHours(0, 0, 0, 0))).sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
     const dates = [...new Set(allSlots.map(slot => slot.date))];
     filterSelect.replaceChildren(new Option('Todas as datas', 'all'), ...dates.map(date => new Option(displayDate(date), date)));
     filterSelect.value = dates.includes(currentFilter) ? currentFilter : 'all';
@@ -310,7 +352,7 @@
     const day = document.createElement('div'); day.className = 'slot-day'; const dayNumber = document.createElement('strong'); dayNumber.textContent = String(date.getDate()).padStart(2, '0'); const month = document.createElement('span'); month.textContent = monthFormatter.format(date).replace('.', '').toUpperCase(); day.append(dayNumber, month);
     const info = document.createElement('div'); info.className = 'slot-info'; const time = document.createElement('strong'); time.textContent = slot.time; const details = document.createElement('span'); details.textContent = `${displayDate(slot.date)} • ${slot.duration || 60} min`; info.append(time, details);
     const badge = document.createElement('span'); badge.className = 'slot-badge'; badge.textContent = 'Disponível';
-    const remove = document.createElement('button'); remove.className = 'icon-button'; remove.type = 'button'; remove.textContent = '×'; remove.title = 'Remover horário'; remove.addEventListener('click', () => { if (window.confirm(`Remover ${displayDate(slot.date)} às ${slot.time}?`)) { write(KEYS.slots, read(KEYS.slots).filter(item => item.id !== slot.id)); renderSlots(); showToast('Horário removido.'); } });
+    const remove = document.createElement('button'); remove.className = 'icon-button'; remove.type = 'button'; remove.textContent = '×'; remove.title = 'Remover horário'; remove.addEventListener('click', () => { if (window.confirm(`Remover ${displayDate(slot.date)} às ${slot.time}?`)) { localStorage.setItem(KEYS.slots, JSON.stringify(read(KEYS.slots).filter(item => item.id !== slot.id))); window.DGBackend?.deleteRecord(KEYS.slots, slot.id).catch(error => showToast(error.message)); renderSlots(); showToast('Horário removido.'); } });
     item.append(day, info, badge, remove); return item;
   }
   document.getElementById('slotDateFilter').addEventListener('change', renderSlots);
@@ -321,14 +363,24 @@
     document.getElementById('productModalTitle').textContent = product ? 'Editar produto' : 'Adicionar produto';
     document.getElementById('productId').value = product?.id || '';
     document.getElementById('productName').value = product?.name || '';
+    document.getElementById('productBrand').value = product?.brand || '';
+    document.getElementById('productModel').value = product?.model || '';
     document.getElementById('productCategory').value = product?.category === 'relogios' ? 'relogios' : 'produtos';
     document.getElementById('productDescription').value = product?.description || '';
     document.getElementById('productPrice').value = product?.price ?? '';
+    document.getElementById('productSalePrice').value = product?.salePrice || '';
     document.getElementById('productCost').value = product?.cost ?? '';
     document.getElementById('productStock').value = product?.stock ?? '';
     document.getElementById('productActive').value = String(product?.active ?? true);
+    document.getElementById('productFeatured').value = String(product?.featured ?? false);
+    document.getElementById('productWarranty').value = product?.warranty || '';
+    document.getElementById('productWeight').value = product?.weight || '';
+    document.getElementById('productLength').value = product?.dimensions?.length || '';
+    document.getElementById('productWidth').value = product?.dimensions?.width || '';
+    document.getElementById('productHeight').value = product?.dimensions?.height || '';
     document.getElementById('productImages').value = (product?.images || []).join('\n');
     document.getElementById('productSpecifications').value = (product?.specifications || []).map(spec => `${spec.label || spec.name}: ${spec.value || ''}`).join('\n');
+    document.getElementById('productVariants').value = (product?.variants || []).map(variant => `${variant.name} | ${variant.priceAdjustment || 0} | ${variant.stock || 0}`).join('\n');
     renderImagePreview(); productModal.showModal();
   }
   function closeProductModal() { productModal.close(); }
@@ -337,6 +389,43 @@
   document.getElementById('cancelProductModal').addEventListener('click', closeProductModal);
   productModal.addEventListener('click', event => { if (event.target === productModal) closeProductModal(); });
   document.getElementById('productImages').addEventListener('input', renderImagePreview);
+  document.getElementById('productImageFiles').addEventListener('change', async event => {
+    const files = [...event.target.files].slice(0, 4);
+    if (!files.length) return;
+    try {
+      const images = window.DGBackend?.enabled
+        ? await Promise.all(files.map(file => window.DGBackend.uploadProductImage(file)))
+        : await Promise.all(files.map(compressImage));
+      const field = document.getElementById('productImages');
+      field.value = [...productImages(), ...images].slice(0, 8).join('\n');
+      renderImagePreview();
+      showToast(`${files.length} imagem(ns) adicionada(s).`);
+    } catch {
+      showToast('Não foi possível processar uma das imagens.');
+    }
+    event.target.value = '';
+  });
+  function compressImage(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = () => {
+        const image = new Image();
+        image.onerror = reject;
+        image.onload = () => {
+          const max = 1200;
+          const scale = Math.min(1, max / Math.max(image.width, image.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(image.width * scale));
+          canvas.height = Math.max(1, Math.round(image.height * scale));
+          canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/webp', .78));
+        };
+        image.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
   function productImages() { return document.getElementById('productImages').value.split(/\r?\n/).map(value => value.trim()).filter(Boolean).slice(0, 8); }
   function productSpecifications() {
     return document.getElementById('productSpecifications').value.split(/\r?\n/).map(line => {
@@ -344,6 +433,13 @@
       if (separator < 1) return null;
       return { label: line.slice(0, separator).trim(), value: line.slice(separator + 1).trim() };
     }).filter(spec => spec && spec.label && spec.value).slice(0, 20);
+  }
+  function productVariants(productId) {
+    return document.getElementById('productVariants').value.split(/\r?\n/).map((line, index) => {
+      const [name, adjustment = '0', stock = '0'] = line.split('|').map(value => value.trim());
+      if (!name) return null;
+      return { id: `${productId}-VAR-${index + 1}-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`, name, priceAdjustment: Number(adjustment) || 0, stock: Math.max(0, Number(stock) || 0) };
+    }).filter(Boolean).slice(0, 20);
   }
   function renderImagePreview() {
     const preview = document.getElementById('productImagePreview'); preview.replaceChildren();
@@ -359,8 +455,37 @@
     event.preventDefault(); if (!validateProduct()) return;
     const id = document.getElementById('productId').value || `PROD-${Date.now()}`;
     const products = read(KEYS.products); const current = products.find(product => product.id === id);
-    const product = { id, name: document.getElementById('productName').value.trim(), category: document.getElementById('productCategory').value, description: document.getElementById('productDescription').value.trim(), price: Number(document.getElementById('productPrice').value), cost: Number(document.getElementById('productCost').value) || 0, stock: Number(document.getElementById('productStock').value), active: document.getElementById('productActive').value === 'true', images: productImages(), specifications: productSpecifications(), createdAt: current?.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString() };
-    write(KEYS.products, current ? products.map(item => item.id === id ? product : item) : [...products, product]); closeProductModal(); renderProducts(); showToast(current ? 'Produto atualizado.' : 'Produto adicionado.');
+    const product = {
+      id,
+      name: document.getElementById('productName').value.trim(),
+      brand: document.getElementById('productBrand').value.trim(),
+      model: document.getElementById('productModel').value.trim(),
+      category: document.getElementById('productCategory').value,
+      description: document.getElementById('productDescription').value.trim(),
+      price: Number(document.getElementById('productPrice').value),
+      salePrice: Number(document.getElementById('productSalePrice').value) || 0,
+      cost: Number(document.getElementById('productCost').value) || 0,
+      stock: Number(document.getElementById('productStock').value),
+      active: document.getElementById('productActive').value === 'true',
+      featured: document.getElementById('productFeatured').value === 'true',
+      warranty: document.getElementById('productWarranty').value.trim(),
+      weight: Number(document.getElementById('productWeight').value) || 0,
+      dimensions: {
+        length: Number(document.getElementById('productLength').value) || 0,
+        width: Number(document.getElementById('productWidth').value) || 0,
+        height: Number(document.getElementById('productHeight').value) || 0
+      },
+      images: productImages(),
+      specifications: productSpecifications(),
+      variants: productVariants(id),
+      createdAt: current?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    if (product.salePrice >= product.price) product.salePrice = 0;
+    const updatedProducts = current ? products.map(item => item.id === id ? product : item) : [...products, product];
+    localStorage.setItem(KEYS.products, JSON.stringify(updatedProducts));
+    if (window.DGBackend?.enabled) window.DGBackend.syncCollection(KEYS.products, [product]).catch(error => showToast(error.message));
+    closeProductModal(); renderProducts(); showToast(current ? 'Produto atualizado.' : 'Produto adicionado.');
   });
   function renderProducts() {
     const query = document.getElementById('productSearch').value.trim().toLowerCase(); const filter = document.getElementById('productStatusFilter').value;
@@ -379,7 +504,7 @@
     if (product.images?.[0]) { const image = document.createElement('img'); image.src = product.images[0]; image.alt = product.name; image.addEventListener('error', () => { thumb.textContent = '□'; }); thumb.appendChild(image); } else thumb.textContent = '□';
     const info = document.createElement('div'); const name = document.createElement('strong'); name.className = 'cell-primary'; name.textContent = product.name; const description = document.createElement('span'); description.className = 'cell-secondary'; description.textContent = product.description; info.append(name, description); wrapper.append(thumb, info); productCell.appendChild(wrapper);
     const category = document.createElement('td'); category.textContent = product.category === 'relogios' ? 'Relógios' : 'Produtos';
-    const price = document.createElement('td'); price.innerHTML = `<strong class="cell-primary">${money(product.price)}</strong>`;
+    const price = document.createElement('td'); price.innerHTML = `<strong class="cell-primary">${money(product.salePrice > 0 ? product.salePrice : product.price)}</strong>${product.salePrice > 0 ? `<span class="cell-secondary">de ${money(product.price)}</span>` : ''}`;
     const cost = document.createElement('td'); cost.textContent = money(product.cost);
     const stock = document.createElement('td'); stock.innerHTML = `<strong class="cell-primary ${product.stock <= 5 ? 'stock-low' : ''}">${product.stock} un.</strong>`;
     const status = document.createElement('td'); status.innerHTML = `<span class="status-badge ${product.active ? 'active' : 'inactive'}">${product.active ? 'Ativo' : 'Inativo'}</span>`;
@@ -387,13 +512,28 @@
     const actions = document.createElement('td'); const group = document.createElement('div'); group.className = 'action-group'; const edit = document.createElement('button'); edit.className = 'icon-button'; edit.type = 'button'; edit.textContent = '✎'; edit.title = 'Editar produto'; edit.addEventListener('click', () => openProductModal(product)); const remove = document.createElement('button'); remove.className = 'icon-button'; remove.type = 'button'; remove.textContent = '×'; remove.title = 'Excluir produto'; remove.addEventListener('click', () => deleteProduct(product.id)); group.append(edit, remove); actions.appendChild(group);
     row.append(productCell, category, price, cost, stock, status, updated, actions); return row;
   }
-  function deleteProduct(id) { const product = read(KEYS.products).find(item => item.id === id); if (!product || !window.confirm(`Excluir “${product.name}”?`)) return; write(KEYS.products, read(KEYS.products).filter(item => item.id !== id)); renderProducts(); showToast('Produto excluído.'); }
+  function deleteProduct(id) { const product = read(KEYS.products).find(item => item.id === id); if (!product || !window.confirm(`Excluir “${product.name}”?`)) return; localStorage.setItem(KEYS.products, JSON.stringify(read(KEYS.products).filter(item => item.id !== id))); window.DGBackend?.deleteRecord(KEYS.products, id).catch(error => showToast(error.message)); renderProducts(); showToast('Produto excluído.'); }
   document.getElementById('productSearch').addEventListener('input', renderProducts);
   document.getElementById('productStatusFilter').addEventListener('change', renderProducts);
-  document.getElementById('refreshDashboard').addEventListener('click', () => { renderDashboard(); showToast('Dashboard atualizado.'); });
+  document.getElementById('refreshDashboard').addEventListener('click', async () => { if (window.DGBackend?.enabled) await window.DGBackend.hydrateAdmin(); renderDashboard(); showToast('Dashboard atualizado.'); });
+  document.getElementById('adminLogout').addEventListener('click', async () => {
+    await window.DGBackend?.signOut();
+    location.replace(window.DGBackend?.enabled ? 'admin-login.html' : 'index.html');
+  });
 
   window.addEventListener('resize', () => { clearTimeout(chartResizeTimer); chartResizeTimer = setTimeout(() => { if (currentSection === 'dashboard') renderDashboard(); }, 160); });
   window.addEventListener('storage', () => { if (currentSection === 'dashboard') renderDashboard(); else openSection(currentSection); });
   document.addEventListener('keydown', event => { if (event.key === 'Escape') setSidebar(false); });
-  updateNavCounts(); renderDashboard();
+  async function boot() {
+    if (window.DGBackend?.enabled) {
+      const allowed = await window.DGBackend.requireAdmin();
+      if (!allowed) { location.replace('admin-login.html'); return; }
+      document.getElementById('adminDataMode').textContent = 'Dados sincronizados com o backend.';
+      try { await window.DGBackend.hydrateAdmin(); }
+      catch (error) { showToast(`Falha ao carregar o backend: ${error.message}`); }
+    }
+    updateNavCounts();
+    renderDashboard();
+  }
+  boot();
 })();

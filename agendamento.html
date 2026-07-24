@@ -54,7 +54,10 @@
                 <label class="field full"><span>Nome completo *</span><input id="customerName" name="customerName" type="text" autocomplete="name" placeholder="Digite seu nome" required><small></small></label>
                 <label class="field"><span>Número de telefone *</span><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="numeric" placeholder="(19) 99999-9999" required><small></small></label>
                 <label class="field"><span>Modelo do celular *</span><input id="device" name="device" type="text" placeholder="Ex.: iPhone 15 Pro" required><small></small></label>
-                <label class="field full"><span>Endereço completo *</span><input id="address" name="address" type="text" autocomplete="street-address" placeholder="Rua, número, bairro, cidade e CEP" required><small></small></label>
+                <label class="field"><span>CEP *</span><input id="bookingCep" name="bookingCep" type="text" inputmode="numeric" maxlength="9" placeholder="00000-000" required><small></small></label>
+                <label class="field"><span>Município *</span><input id="bookingCity" name="bookingCity" type="text" readonly required><small>Preenchido pela consulta do CEP.</small></label>
+                <label class="field"><span>Local do atendimento *</span><select id="serviceMode" name="serviceMode" required><option value="home">No endereço do cliente</option><option value="store">Na loja DG Store</option></select><small id="serviceModeHelp">Atendimento em domicílio sujeito à cidade informada.</small></label>
+                <label class="field full"><span>Endereço completo *</span><input id="address" name="address" type="text" autocomplete="street-address" placeholder="Rua, número e bairro" required><small></small></label>
                 <fieldset class="package-fieldset full">
                   <legend>Selecione o pacote *</legend>
                   <div class="package-options" id="packageOptions"></div>
@@ -79,11 +82,11 @@
                 <div class="qr-demo" aria-label="Espaço para QR Code Pix"><span>PIX</span><small>QR CODE</small></div>
                 <div class="pix-copy"><span>Código Pix copia e cola</span><div><input id="pixCode" type="text" readonly><button id="copyPix" type="button">Copiar</button></div><p id="paymentIdText"></p></div>
               </div>
-              <div class="demo-notice" id="demoNotice" hidden><strong>Modo de demonstração</strong><p>Nenhum valor real será cobrado. Use “Simular aprovação” apenas para testar o fluxo. Ao publicar, conecte a API de pagamento no arquivo <code>agendamento.js</code>.</p></div>
+              <div class="demo-notice" id="demoNotice" hidden><strong>Modo de demonstração</strong><p>Nenhum valor real será cobrado. Configure o Supabase e o Mercado Pago conforme o arquivo <code>BACKEND-SETUP.md</code> para ativar cobranças reais.</p></div>
               <div class="payment-status" id="paymentStatus"><i></i><span>Pagamento ainda não gerado</span></div>
               <div class="payment-actions">
                 <button class="button button-secondary" id="backToData" type="button">Voltar</button>
-                <button class="button button-primary" id="generatePayment" type="button">Gerar pagamento Pix</button>
+                <button class="button button-primary" id="generatePayment" type="button">Ir para o Mercado Pago</button>
                 <button class="button button-secondary" id="checkPayment" type="button" hidden>Verificar pagamento</button>
                 <button class="button button-primary" id="demoApprove" type="button" hidden>Simular aprovação</button>
               </div>
@@ -136,6 +139,9 @@
     <div class="footer-bottom"><div class="footer-bottom-inner"><p>© <span data-current-year></span> DG Store. Todos os direitos reservados.</p><p>Proteção premium para o seu aparelho.</p></div></div>
   </footer>
   <script src="common.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="backend-config.js"></script>
+  <script src="backend.js"></script>
   <script src="agendamento.js"></script>
 </body>
 </html>

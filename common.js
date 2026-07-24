@@ -30,6 +30,14 @@
   document.querySelectorAll('[data-current-year]').forEach(item => {
     item.textContent = new Date().getFullYear();
   });
+  document.querySelectorAll('.footer-column').forEach(column => {
+    if (column.querySelector('h3')?.textContent.trim() === 'Informações' && !column.querySelector('a[href="politicas.html"]')) {
+      const link = document.createElement('a');
+      link.href = 'politicas.html';
+      link.textContent = 'Políticas da loja';
+      column.prepend(link);
+    }
+  });
 
   function readCart() {
     try {
@@ -52,6 +60,7 @@
     const cart = readCart();
     const item = {
       id: String(product.id || `produto-${Date.now()}`),
+      productId: String(product.productId || product.id || ''),
       name: String(product.name || 'Produto DG Store'),
       variant: String(product.variant || ''),
       image: String(product.image || ''),

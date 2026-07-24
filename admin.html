@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="admin-extra.css">
 </head>
 <body>
   <div class="admin-shell">
@@ -25,12 +26,14 @@
         <button class="nav-item" type="button" data-section-target="blindagens"><span class="nav-icon">◇</span><span>Blindagens</span><b id="bookingsNavCount">0</b></button>
         <button class="nav-item" type="button" data-section-target="horarios"><span class="nav-icon">◷</span><span>Horários</span></button>
         <button class="nav-item" type="button" data-section-target="produtos"><span class="nav-icon">□</span><span>Produtos</span><b id="productsNavCount">0</b></button>
+        <button class="nav-item" type="button" data-section-target="configuracoes"><span class="nav-icon">⚙</span><span>Configurações</span></button>
       </nav>
 
       <div class="sidebar-bottom">
         <a href="index.html" target="_blank" rel="noopener">Abrir loja <span>↗</span></a>
         <a href="rastreio.html" target="_blank" rel="noopener">Testar rastreio <span>↗</span></a>
-        <p>Dados salvos neste navegador.</p>
+        <button id="adminLogout" type="button">Sair do painel <span>↗</span></button>
+        <p id="adminDataMode">Modo local de demonstração.</p>
       </div>
     </aside>
 
@@ -59,6 +62,13 @@
             <article class="metric-card"><div class="metric-icon violet">◇</div><div><span>Blindagens efetuadas</span><strong id="completedBookings">0</strong><small id="bookingsCountNote">Serviços concluídos</small></div></article>
           </div>
 
+          <div class="insight-grid">
+            <article><span>Faturamento total</span><strong id="totalRevenue">R$ 0,00</strong><small>Pedidos não cancelados</small></article>
+            <article><span>Ticket médio</span><strong id="averageTicket">R$ 0,00</strong><small>Média por pedido</small></article>
+            <article><span>Pedidos pendentes</span><strong id="pendingOrders">0</strong><small>Aguardando conclusão</small></article>
+            <article><span>Estoque baixo</span><strong id="dashboardLowStock">0</strong><small>Produtos com até 5 unidades</small></article>
+          </div>
+
           <div class="dashboard-grid">
             <article class="chart-card profit-chart-card">
               <div class="card-title"><div><span>LUCRO</span><h3>Evolução dos últimos 6 meses</h3></div><strong id="chartTotal">R$ 0,00</strong></div>
@@ -83,7 +93,7 @@
           </div>
           <div class="toolbar">
             <label class="search-field"><span>⌕</span><input id="orderSearch" type="search" placeholder="Buscar por cliente, produto ou ID"></label>
-            <select id="orderStatusFilter" aria-label="Filtrar por status"><option value="all">Todos os status</option><option value="em_preparo">Em preparo</option><option value="a_caminho">A caminho</option><option value="entregue">Entregue</option></select>
+            <select id="orderStatusFilter" aria-label="Filtrar por status"><option value="all">Todos os status</option><option value="pagamento_pendente">Pagamento pendente</option><option value="pagamento_aprovado">Pagamento aprovado</option><option value="pedido_confirmado">Pedido confirmado</option><option value="em_preparo">Em preparo</option><option value="aguardando_transportadora">Aguardando transportadora</option><option value="a_caminho">A caminho</option><option value="entregue">Entregue</option><option value="cancelado">Cancelado</option></select>
           </div>
           <div class="table-card">
             <div class="table-scroll"><table><thead><tr><th>ID da compra</th><th>Produto</th><th>Cliente</th><th>Contato</th><th>Endereço</th><th>Total</th><th>Status mostrado ao cliente</th><th></th></tr></thead><tbody id="ordersTableBody"></tbody></table></div>
@@ -145,6 +155,26 @@
             <div class="table-empty" id="productsEmpty"><span>□</span><h3>Nenhum produto cadastrado</h3><p>Use o botão “Adicionar produto” para começar o catálogo.</p></div>
           </div>
         </section>
+
+        <section class="admin-section" data-section="configuracoes">
+          <div class="section-heading">
+            <div><span class="section-kicker">OPERAÇÃO DA LOJA</span><h2>Configurações</h2><p>Defina retirada, entrega local, Correios e municípios atendidos pela blindagem.</p></div>
+          </div>
+          <article class="settings-panel">
+            <form id="storeSettingsForm">
+              <div class="settings-grid">
+                <label class="full"><span>Endereço da loja *</span><input id="settingStoreAddress" type="text" required placeholder="Rua, número, bairro, cidade - SP"></label>
+                <label><span>CEP de origem *</span><input id="settingStoreCep" type="text" maxlength="9" required placeholder="00000-000"></label>
+                <label><span>Entrega local (R$)</span><input id="settingLocalPrice" type="number" min="0" step="0.01" required></label>
+                <label><span>Frete provisório distante (R$)</span><input id="settingRemotePrice" type="number" min="0" step="0.01" required></label>
+                <label class="full"><span>Cidades com entrega local</span><textarea id="settingLocalCities" rows="4" placeholder="Uma cidade por linha"></textarea></label>
+                <label class="full"><span>Cidades com blindagem em domicílio</span><textarea id="settingArmorCities" rows="4" placeholder="Uma cidade por linha"></textarea></label>
+              </div>
+              <div class="settings-note"><strong>Correios</strong><p>Para cotações reais de PAC e SEDEX, configure o token do Melhor Envio nas variáveis secretas do backend. Sem ele, o sistema usa o valor provisório acima.</p></div>
+              <button class="primary-button" type="submit">Salvar configurações</button>
+            </form>
+          </article>
+        </section>
       </main>
     </div>
   </div>
@@ -155,14 +185,25 @@
       <input id="productId" type="hidden">
       <div class="modal-grid">
         <label class="full"><span>Nome do produto *</span><input id="productName" type="text" placeholder="Ex.: Fone Bluetooth" required><small></small></label>
+        <label><span>Marca</span><input id="productBrand" type="text" placeholder="Ex.: DG Tech"><small></small></label>
+        <label><span>Modelo / SKU</span><input id="productModel" type="text" placeholder="Ex.: DGF-100"><small></small></label>
         <label><span>Categoria *</span><select id="productCategory"><option value="produtos">Produtos</option><option value="relogios">Relógios</option></select><small>Define em qual página o item será exibido.</small></label>
         <label><span>Status</span><select id="productActive"><option value="true">Ativo na loja</option><option value="false">Inativo</option></select><small></small></label>
+        <label><span>Destaque</span><select id="productFeatured"><option value="false">Produto comum</option><option value="true">Destacar na loja</option></select><small></small></label>
+        <label><span>Garantia</span><input id="productWarranty" type="text" placeholder="Ex.: 12 meses"><small></small></label>
         <label class="full"><span>Descrição *</span><textarea id="productDescription" rows="4" placeholder="Descreva características e diferenciais" required></textarea><small></small></label>
-        <label><span>Preço de venda *</span><input id="productPrice" type="number" min="0" step="0.01" placeholder="0,00" required><small></small></label>
+        <label><span>Preço normal *</span><input id="productPrice" type="number" min="0" step="0.01" placeholder="0,00" required><small></small></label>
+        <label><span>Preço promocional</span><input id="productSalePrice" type="number" min="0" step="0.01" placeholder="Opcional"><small>Use um valor menor que o preço normal.</small></label>
         <label><span>Custo do produto</span><input id="productCost" type="number" min="0" step="0.01" placeholder="Usado no cálculo do lucro"><small></small></label>
         <label><span>Quantidade em estoque *</span><input id="productStock" type="number" min="0" step="1" placeholder="0" required><small></small></label>
+        <label><span>Peso (kg)</span><input id="productWeight" type="number" min="0" step="0.01" placeholder="Ex.: 0,35"><small>Será usado no frete real.</small></label>
+        <label><span>Comprimento (cm)</span><input id="productLength" type="number" min="0" step="0.1" placeholder="0"><small></small></label>
+        <label><span>Largura (cm)</span><input id="productWidth" type="number" min="0" step="0.1" placeholder="0"><small></small></label>
+        <label><span>Altura (cm)</span><input id="productHeight" type="number" min="0" step="0.1" placeholder="0"><small></small></label>
         <label class="full"><span>Imagens</span><textarea id="productImages" rows="3" placeholder="Um caminho ou URL por linha&#10;assets/produtos/fone-1.png"></textarea><small>Você pode adicionar várias imagens, uma por linha.</small></label>
+        <label class="full"><span>Enviar imagens</span><input id="productImageFiles" type="file" accept="image/*" multiple><small>Até 4 arquivos. Com o backend ativo, as imagens são enviadas ao armazenamento do Supabase.</small></label>
         <label class="full"><span>Especificações</span><textarea id="productSpecifications" rows="4" placeholder="Uma informação por linha no formato:&#10;Marca: Exemplo&#10;Cor: Preto&#10;Garantia: 12 meses"></textarea><small>Essas informações aparecem na página individual do produto.</small></label>
+        <label class="full"><span>Variações</span><textarea id="productVariants" rows="4" placeholder="Uma por linha:&#10;Preto | 0 | 8&#10;Azul | 10 | 4"></textarea><small>Formato: nome | acréscimo no preço | estoque.</small></label>
       </div>
       <div class="image-preview" id="productImagePreview"></div>
       <div class="modal-actions"><button class="secondary-button" id="cancelProductModal" type="button">Cancelar</button><button class="primary-button" type="submit">Salvar produto</button></div>
@@ -170,6 +211,10 @@
   </dialog>
 
   <div class="admin-toast" id="adminToast" role="status"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="backend-config.js"></script>
+  <script src="backend.js"></script>
   <script src="admin.js"></script>
+  <script src="admin-settings.js"></script>
 </body>
 </html>

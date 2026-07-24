@@ -13,14 +13,31 @@
     return {
       id: String(product.id || ''),
       name: String(product.name || 'Produto DG Store'),
+      brand: String(product.brand || ''),
+      model: String(product.model || ''),
       description: String(product.description || ''),
       category: product.category === 'relogios' ? 'relogios' : 'produtos',
       price: Math.max(0, Number(product.price) || 0),
+      salePrice: Math.max(0, Number(product.salePrice) || 0),
       cost: Math.max(0, Number(product.cost) || 0),
       stock: Math.max(0, Number(product.stock) || 0),
       active: product.active !== false,
+      featured: product.featured === true,
+      warranty: String(product.warranty || ''),
+      weight: Math.max(0, Number(product.weight) || 0),
+      dimensions: {
+        length: Math.max(0, Number(product.dimensions?.length) || 0),
+        width: Math.max(0, Number(product.dimensions?.width) || 0),
+        height: Math.max(0, Number(product.dimensions?.height) || 0)
+      },
       images: Array.isArray(product.images) ? product.images.filter(Boolean).map(String) : [],
       specifications: Array.isArray(product.specifications) ? product.specifications : [],
+      variants: Array.isArray(product.variants) ? product.variants.map((variant, index) => ({
+        id: String(variant.id || `VAR-${index + 1}`),
+        name: String(variant.name || `Opção ${index + 1}`),
+        priceAdjustment: Number(variant.priceAdjustment) || 0,
+        stock: Math.max(0, Number(variant.stock) || 0)
+      })) : [],
       createdAt: product.createdAt || '',
       updatedAt: product.updatedAt || ''
     };
@@ -36,6 +53,10 @@
   }
 
   async function getProducts() {
+    if (window.DGBackend?.enabled) {
+      const products = await window.DGBackend.getProducts();
+      return Array.isArray(products) ? products.map(normaliseProduct) : [];
+    }
     if (!PRODUCTS_ENDPOINT) return readLocalProducts();
     const response = await fetch(PRODUCTS_ENDPOINT, { headers: { Accept: 'application/json' } });
     if (!response.ok) throw new Error('Não foi possível carregar os produtos.');
@@ -52,6 +73,12 @@
   async function calculateShipping({ cep, productId, quantity = 1 }) {
     const digits = String(cep || '').replace(/\D/g, '');
     if (digits.length !== 8) throw new Error('Informe um CEP com 8 números.');
+    if (window.DGBackend?.enabled) {
+      return window.DGBackend.quoteShipping({
+        cep: digits,
+        items: [{ productId, quantity }]
+      });
+    }
     if (SHIPPING_ENDPOINT) {
       const response = await fetch(SHIPPING_ENDPOINT, {
         method: 'POST',
@@ -75,5 +102,11 @@
     };
   }
 
-  window.DGData = { getProducts, getProduct, calculateShipping, money: value => currency.format(Number(value) || 0), productsEndpoint: PRODUCTS_ENDPOINT, shippingEndpoint: SHIPPING_ENDPOINT };
+  function effectivePrice(product) {
+    const regular = Number(product?.price) || 0;
+    const sale = Number(product?.salePrice) || 0;
+    return sale > 0 && sale < regular ? sale : regular;
+  }
+
+  window.DGData = { getProducts, getProduct, calculateShipping, effectivePrice, money: value => currency.format(Number(value) || 0), productsEndpoint: PRODUCTS_ENDPOINT, shippingEndpoint: SHIPPING_ENDPOINT };
 })();

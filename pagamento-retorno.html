@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#06080b">
+  <title>Pagamento | DG Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="pagamento-retorno.css">
+</head>
+<body>
+  <main class="payment-return">
+    <section class="return-card">
+      <a href="index.html"><img src="assets/logo.png" alt="DG Store"></a>
+      <div class="status-loader" id="statusLoader"><span></span></div>
+      <span class="eyebrow" id="returnEyebrow">VERIFICANDO PAGAMENTO</span>
+      <h1 id="returnTitle">Aguarde um instante</h1>
+      <p id="returnMessage">Estamos confirmando o pagamento com o Mercado Pago.</p>
+      <strong id="returnCode" hidden></strong>
+      <div class="return-actions" id="returnActions" hidden>
+        <a class="button button-primary" id="returnPrimary" href="index.html">Continuar</a>
+        <a class="button button-secondary" href="index.html">Voltar para a loja</a>
+      </div>
+      <button class="button button-secondary" id="checkAgain" type="button" hidden>Verificar novamente</button>
+    </section>
+  </main>
+  <script src="common.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="backend-config.js"></script>
+  <script src="backend.js"></script>
+  <script src="pagamento-retorno.js"></script>
+</body>
+</html>

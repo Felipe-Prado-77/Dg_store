@@ -105,7 +105,7 @@
     if (readCart().length && window.confirm('Deseja remover todos os itens do carrinho?')) saveCart([]);
   });
   checkoutButton.addEventListener('click', () => {
-    window.DGStore?.showToast('Carrinho pronto. Conecte esta etapa ao checkout da sua loja.');
+    if (readCart().length) window.location.href = 'checkout.html';
   });
 
   window.DGCart = {

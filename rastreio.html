@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="common.css">
   <link rel="stylesheet" href="rastreio.css">
+  <link rel="stylesheet" href="rastreio-extra.css">
 </head>
 <body>
   <header class="site-header">
@@ -43,11 +44,17 @@
           <div class="order-heading"><div><span>PEDIDO ENCONTRADO</span><h2 id="resultId"></h2><p id="resultDate"></p></div><strong id="resultStatus"></strong></div>
           <div class="order-summary"><div><span>Cliente</span><strong id="resultCustomer"></strong></div><div><span>Produtos</span><strong id="resultProducts"></strong></div><div><span>Total</span><strong id="resultTotal"></strong></div><div><span>Entrega</span><strong id="resultAddress"></strong></div></div>
           <div class="tracking-timeline" id="trackingTimeline">
-            <div class="timeline-step" data-status-step="em_preparo"><span>✓</span><div><strong>Em preparo</strong><p>Seu pedido foi recebido e está sendo preparado.</p></div></div>
+            <div class="timeline-step" data-status-step="pagamento_aprovado"><span>1</span><div><strong>Pagamento aprovado</strong><p>O pagamento do pedido foi confirmado.</p></div></div>
             <div class="timeline-line"></div>
-            <div class="timeline-step" data-status-step="a_caminho"><span>2</span><div><strong>A caminho</strong><p>O pedido saiu para o endereço informado.</p></div></div>
+            <div class="timeline-step" data-status-step="pedido_confirmado"><span>2</span><div><strong>Pedido confirmado</strong><p>A compra já entrou no fluxo da loja.</p></div></div>
             <div class="timeline-line"></div>
-            <div class="timeline-step" data-status-step="entregue"><span>3</span><div><strong>Entregue</strong><p>A entrega foi concluída.</p></div></div>
+            <div class="timeline-step" data-status-step="em_preparo"><span>3</span><div><strong>Em preparo</strong><p>Os produtos estão sendo separados.</p></div></div>
+            <div class="timeline-line"></div>
+            <div class="timeline-step" data-status-step="aguardando_transportadora"><span>4</span><div><strong>Aguardando transportadora</strong><p>O pacote está pronto para coleta.</p></div></div>
+            <div class="timeline-line"></div>
+            <div class="timeline-step" data-status-step="a_caminho"><span>5</span><div><strong>A caminho</strong><p>O pedido saiu para o endereço informado.</p></div></div>
+            <div class="timeline-line"></div>
+            <div class="timeline-step" data-status-step="entregue"><span>6</span><div><strong>Entregue</strong><p>A entrega foi concluída.</p></div></div>
           </div>
           <p class="updated-at" id="resultUpdated"></p>
         </article>
@@ -65,6 +72,9 @@
     <div class="footer-bottom"><div class="footer-bottom-inner"><p>© <span data-current-year></span> DG Store. Todos os direitos reservados.</p><p>Proteção premium para o seu aparelho.</p></div></div>
   </footer>
   <script src="common.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="backend-config.js"></script>
+  <script src="backend.js"></script>
   <script src="rastreio.js"></script>
 </body>
 </html>
