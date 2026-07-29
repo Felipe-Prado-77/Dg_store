@@ -133,6 +133,7 @@
       sessionStorage.setItem('dgCheckoutPhone',booking.phone);
       const result=await window.DGBackend.createCheckout({kind:'booking',...booking,siteUrl:window.DGBackend.config.siteUrl});
       if(!result?.initPoint)throw new Error('O Mercado Pago não retornou o endereço de pagamento.');
+      if(result.sessionId&&result.statusToken)sessionStorage.setItem(`dgPaymentToken:${result.sessionId}`,result.statusToken);
       location.href=result.initPoint;
     }catch(error){window.DGStore?.showToast(error.message||'Erro ao gerar pagamento.');paymentStatus.classList.remove('pending');paymentStatus.querySelector('span').textContent='Não foi possível abrir o pagamento.';generateButton.disabled=false;generateButton.textContent='Tentar novamente'}
   }

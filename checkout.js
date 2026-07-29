@@ -94,6 +94,7 @@
       const customerData=customer();sessionStorage.setItem('dgCheckoutPhone',customerData.phone);
       const result=await window.DGBackend.createCheckout({kind:'order',customer:customerData,address:address(),items:backendItems(),shippingId:shipping.id,siteUrl:window.DGBackend.config.siteUrl});
       if(!result?.initPoint)throw new Error('O Mercado Pago não retornou o endereço de pagamento.');
+      if(result.sessionId&&result.statusToken)sessionStorage.setItem(`dgPaymentToken:${result.sessionId}`,result.statusToken);
       location.href=result.initPoint;
     }catch(failure){window.DGStore.showToast(failure.message||'Não foi possível iniciar o pagamento.');button.disabled=!backendEnabled;button.textContent=backendEnabled?'Ir para o Mercado Pago':'Pagamento indisponível'}
   });

@@ -117,7 +117,9 @@
   }
   async function quoteShipping(payload) { return invoke('shipping-quote', payload); }
   async function createCheckout(payload) { return invoke('create-checkout', payload); }
-  async function paymentStatus(sessionId, paymentId) { return invoke('payment-status', { sessionId, paymentId }); }
+  async function paymentStatus(sessionId, paymentId, statusToken) {
+    return invoke('payment-status', { sessionId, paymentId, statusToken });
+  }
   async function trackOrder(id, phone) { return invoke('track-order', { id, phone }); }
   async function signIn(email, password) {
     if (!client) throw new Error('Configure o Supabase antes de entrar.');

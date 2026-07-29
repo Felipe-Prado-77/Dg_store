@@ -73,8 +73,11 @@ https://SEU_PROJECT_REF.supabase.co/functions/v1/mercado-pago-webhook
 ```bash
 npx supabase secrets set \
   SITE_URL="https://seu-dominio.com.br" \
+  ALLOWED_ORIGINS="https://seu-dominio.com.br" \
+  RATE_LIMIT_SALT="UMA_CHAVE_ALEATORIA_FORTE" \
   MERCADO_PAGO_ACCESS_TOKEN="SEU_ACCESS_TOKEN" \
-  MERCADO_PAGO_WEBHOOK_SECRET="SUA_ASSINATURA_SECRETA"
+  MERCADO_PAGO_WEBHOOK_SECRET="SUA_ASSINATURA_SECRETA" \
+  MERCADO_PAGO_USER_ID="ID_NUMERICO_DA_CONTA_RECEBEDORA"
 ```
 
 O pedido ou agendamento só é confirmado depois que o webhook:
@@ -82,6 +85,7 @@ O pedido ou agendamento só é confirmado depois que o webhook:
 - valida a assinatura HMAC;
 - consulta o pagamento diretamente no Mercado Pago;
 - recebe o status `approved`;
+- confere valor, moeda e conta recebedora;
 - executa a finalização idempotente no banco.
 
 ## 5. Entrega local, retirada e Correios
@@ -132,6 +136,11 @@ npx supabase functions deploy track-order --no-verify-jwt
 
 O `config.toml` já define quais funções públicas não usam JWT. O webhook valida a assinatura própria do Mercado Pago.
 
+Depois de publicar, abra **Authentication → Providers → Email** no Supabase e
+desative a criação pública de usuários. Novos administradores devem ser criados
+manualmente em **Authentication → Users** e adicionados à tabela
+`admin_profiles`.
+
 ## 7. Testar antes da produção
 
 1. Cadastre um produto no painel.
@@ -152,6 +161,8 @@ O `config.toml` já define quais funções públicas não usam JWT. O webhook va
 ## 8. Segurança e manutenção
 
 - Ative MFA no usuário administrador.
+- Mantenha o cadastro público de usuários desativado.
+- A reserva provisória de horário dura 15 minutos e possui limite por IP e telefone.
 - Revogue imediatamente qualquer token exposto.
 - Mantenha confirmação de e-mail ativa.
 - Confira os logs das Edge Functions e `audit_logs`.

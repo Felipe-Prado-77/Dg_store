@@ -3,6 +3,9 @@
   const session=params.get('session');
   const paymentId=params.get('payment_id');
   const result=params.get('result');
+  const hashParams=new URLSearchParams(location.hash.replace(/^#/,''));
+  const statusToken=hashParams.get('token')||(session?sessionStorage.getItem(`dgPaymentToken:${session}`):'');
+  if(location.hash)history.replaceState(null,'',`${location.pathname}${location.search}`);
   const loader=document.getElementById('statusLoader');
   const eyebrow=document.getElementById('returnEyebrow');
   const title=document.getElementById('returnTitle');
@@ -85,9 +88,9 @@
   }
   async function check(){
     checkAgain.hidden=true;
-    if(!session||!window.DGBackend?.enabled){showFailed('A referência do pagamento ou o backend não está configurado.');return}
+    if(!session||!window.DGBackend?.enabled){showFailed('A referência segura do pagamento não foi encontrada. Volte pelo mesmo navegador usado na compra.');return}
     try{
-      const data=await window.DGBackend.paymentStatus(session,paymentId);
+      const data=await window.DGBackend.paymentStatus(session,paymentId,statusToken);
       if(data.status==='approved'&&data.resultId){await showApproved(data);return}
       if(['rejected','cancelled','expired'].includes(data.status)||result==='failure'){showFailed();return}
       attempts+=1;
