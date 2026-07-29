@@ -59,21 +59,66 @@
       packageOptions.removeAttribute('aria-busy');
     }
   }
-  const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);date.min=tomorrow.toISOString().split('T')[0];
-
   async function availableSlots(selectedDate){
     if(!backendEnabled)throw new Error('O sistema de agendamento está temporariamente indisponível.');
     return window.DGBackend.getAvailableSlots(selectedDate);
+  }
+  function formatAvailableDate(value){
+    const parsed=new Date(`${value}T12:00:00`);
+    if(Number.isNaN(parsed.getTime()))return value;
+    const text=new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}).format(parsed);
+    return text.charAt(0).toUpperCase()+text.slice(1);
+  }
+  function minimumBookingDate(){
+    const tomorrow=new Date();
+    tomorrow.setDate(tomorrow.getDate()+1);
+    const year=tomorrow.getFullYear();
+    const month=String(tomorrow.getMonth()+1).padStart(2,'0');
+    const day=String(tomorrow.getDate()).padStart(2,'0');
+    return `${year}-${month}-${day}`;
+  }
+  async function loadAvailableDates(){
+    date.disabled=true;
+    date.setAttribute('aria-busy','true');
+    date.replaceChildren();
+    const loading=document.createElement('option');loading.value='';loading.textContent='Carregando datas disponíveis...';date.appendChild(loading);
+    timeSelect.disabled=true;
+    try{
+      const minimumDate=minimumBookingDate();
+      const slots=(await availableSlots()).filter(slot=>slot.status!=='blocked'&&slot.status!=='reserved'&&String(slot.date||'').slice(0,10)>=minimumDate);
+      const dates=new Map();
+      slots.forEach(slot=>{
+        const value=String(slot.date||'').slice(0,10);
+        if(value)dates.set(value,(dates.get(value)||0)+1);
+      });
+      date.replaceChildren();
+      const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent=dates.size?'Selecione uma data':'Nenhuma data disponível no momento';date.appendChild(placeholder);
+      [...dates.entries()].sort(([first],[second])=>first.localeCompare(second)).forEach(([value,count])=>{
+        const option=document.createElement('option');
+        option.value=value;
+        option.textContent=`${formatAvailableDate(value)} — ${count} ${count===1?'horário':'horários'}`;
+        date.appendChild(option);
+      });
+      date.disabled=dates.size===0;
+      setFieldError(date,dates.size?'':'Aguarde a DG Store liberar novos dias e horários.');
+    }catch(error){
+      date.replaceChildren();
+      const unavailable=document.createElement('option');unavailable.value='';unavailable.textContent='Não foi possível carregar as datas';date.appendChild(unavailable);
+      setFieldError(date,error.message||'Não foi possível carregar as datas disponíveis.');
+      window.DGStore?.showToast(error.message);
+    }finally{
+      date.removeAttribute('aria-busy');
+    }
   }
   async function loadAvailableTimes(){
     const selectedDate=date.value;
     let slots=[];
     try{slots=selectedDate?(await availableSlots(selectedDate)).filter(slot=>slot.status!=='blocked'&&slot.status!=='reserved').sort((a,b)=>a.time.localeCompare(b.time)):[]}catch(error){window.DGStore?.showToast(error.message)}
     timeSelect.replaceChildren();
-    const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent=selectedDate?(slots.length?'Selecione um horário':'Nenhum horário disponível nesta data'):'Escolha uma data primeiro';timeSelect.appendChild(placeholder);
+    const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent=selectedDate?(slots.length?'Selecione um horário':'Nenhum horário disponível nesta data'):'Selecione uma data primeiro';timeSelect.appendChild(placeholder);
     slots.forEach(slot=>{const option=document.createElement('option');option.value=String(slot.time).slice(0,5);option.dataset.slotId=slot.id;option.textContent=`${String(slot.time).slice(0,5)} • ${slot.duration||60} min`;timeSelect.appendChild(option)});
     timeSelect.disabled=!selectedDate||slots.length===0;
-    setFieldError(timeSelect,selectedDate&&!slots.length?'Escolha outra data ou aguarde novos horários.':'');
+    setFieldError(timeSelect,selectedDate&&!slots.length?'Este dia acabou de ficar indisponível. Escolha outra data.':'');
   }
   date.addEventListener('change',loadAvailableTimes);
   phone.addEventListener('input',event=>{let value=event.target.value.replace(/\D/g,'').slice(0,11);if(value.length>10)value=value.replace(/^(\d{2})(\d{5})(\d{4})$/,'($1) $2-$3');else if(value.length>6)value=value.replace(/^(\d{2})(\d{4})(\d{0,4})$/,'($1) $2-$3');else if(value.length>2)value=value.replace(/^(\d{2})(\d{0,5})$/,'($1) $2');else if(value.length)value=value.replace(/^(\d{0,2})$/,'($1');event.target.value=value});
@@ -140,4 +185,5 @@
   generateButton.addEventListener('click',createPayment);
   document.getElementById('backToData').addEventListener('click',()=>{paymentStatus.classList.remove('pending');paymentStatus.querySelector('span').textContent='Pronto para abrir o Mercado Pago';generateButton.disabled=!backendEnabled;generateButton.textContent='Ir para o Mercado Pago';setStep(1)});
   loadPackages();
+  loadAvailableDates();
 })();
