@@ -16,11 +16,19 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html {
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+  scroll-behavior: smooth;
+}
 body {
+  width: 100%;
+  max-width: 100%;
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
+  overflow-x: clip;
   background: var(--bg);
   color: var(--text);
   font-family: "Inter", Arial, sans-serif;
@@ -238,9 +246,16 @@ button, a { -webkit-tap-highlight-color: transparent; }
     background: #080b0f;
     box-shadow: -20px 0 60px rgba(0,0,0,.45);
     transform: translateX(102%);
-    transition: transform .28s ease;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform .28s ease, visibility 0s linear .28s;
   }
-  .menu-nav.is-open { transform: translateX(0); }
+  .menu-nav.is-open {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+  }
   .menu-link { padding: 17px 4px; border-bottom: 1px solid var(--line); }
   .menu-link::after { display: none; }
   .cart-link { justify-content: center; margin-top: 24px; }

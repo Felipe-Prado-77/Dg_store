@@ -1,3 +1,36 @@
+.admin-shell,
+.admin-main,
+.admin-content,
+.admin-section,
+.dashboard-grid,
+.bottom-grid,
+.schedule-layout,
+.chart-card,
+.data-card,
+.form-panel,
+.slots-panel,
+.table-card {
+  min-width: 0;
+  max-width: 100%;
+}
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+.table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
 .insight-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
